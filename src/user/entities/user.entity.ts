@@ -4,7 +4,7 @@ import { IsEmail, IsString } from 'class-validator';
 @ObjectType()
 export class User {
   @Field(() => String, { nullable: false })
-  user_id: string;
+  id: string;
 
   @Field(() => String, { nullable: false })
   @IsString()

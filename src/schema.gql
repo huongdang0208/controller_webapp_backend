@@ -8,7 +8,7 @@ input CreateUserInput {
   username: String!
 }
 
-"""Date custom scalr type"""
+"""Date custom scalar type"""
 scalar Date
 
 """
@@ -34,10 +34,10 @@ input SigninUserInput {
 type User {
   created_at: DateTime
   email: String!
+  id: String!
   order_id: [String!]
   password: String!
   role: String
   updated_at: DateTime
-  user_id: String!
   username: String!
 }

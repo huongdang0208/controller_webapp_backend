@@ -8,6 +8,7 @@
   "scripts": {
     "test:docker": "docker compose up test-db -d",
     "start:docker": "docker restart api-nest-tutorial-dev-db-1",
+    "remove:docker": "docker remove api-nest-tutorial-dev-db-1 -f",
     "start:prisma": "npx prisma studio",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -42,7 +43,7 @@
     "prisma": "^5.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "uuidv4": "^6.2.13"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

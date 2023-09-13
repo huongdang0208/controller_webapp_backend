@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { SigninUserInput } from './dto/signin-user.input';
@@ -34,16 +34,22 @@ export class UserService {
     const hash = await argon2.hash(createAuthenticationInput.password);
     if (hash) {
       try {
+        console.log(
+          'hash: ',
+          hash,
+          'email: ',
+          createAuthenticationInput.username,
+        );
         const user = await this.prisma.user.create({
           data: {
-            user_id: uuid(),
+            id: uuidv4(),
             username: createAuthenticationInput.username,
             email: createAuthenticationInput.email,
             password: hash,
             role: 'user',
           },
         });
-        if (user) return this.signToken(user.user_id, user.email);
+        if (user) return this.signToken(user.id, user.email);
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
@@ -69,7 +75,7 @@ export class UserService {
           try {
             if (await argon2.verify(user.password, signinUserInput.password)) {
               delete user.password;
-              return this.signToken(user.user_id, user.email);
+              return this.signToken(user.id, user.email);
             } else {
               throw new ForbiddenException('Credentials incorrect');
             }
