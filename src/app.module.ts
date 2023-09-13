@@ -4,11 +4,9 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { join } from "path";
 
-import { AppService } from "./app.service";
 import { AppResolver } from "./app.resolver";
 import { PrismaModule } from "./prisma/prisma.module";
 import { UserModule } from "./user/user.module";
-import { DateScalar } from "./date.scalar";
 
 @Module({
     imports: [
@@ -24,9 +22,9 @@ import { DateScalar } from "./date.scalar";
         UserModule,
     ],
     controllers: [],
-    providers: [AppService, AppResolver, DateScalar],
+    providers: [AppResolver],
 })
-export class AppModule {}
+export class AppModule { }
 
 // through the forRoot method we have access to the apollo server
 // and can transmit a configuration object
