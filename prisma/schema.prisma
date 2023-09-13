@@ -2,55 +2,55 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id String @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  email String @unique
-  password String
+    email String @unique
+    password String
 
-  username String
-  role String
+    username String
+    role String
 
-  bookmarks BookMark[]
-  orders Order[]
+    bookmarks BookMark[]
+    orders Order[]
 
 }
 
 // onDelete: Cascad mean when parent model of this model is deleted, in case when User model is deleted, the Bookmark is delete
 model BookMark {
-  id Int @id @default (autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id Int @id @default (autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  title String
-  description String
-  link String?
+    title String
+    description String
+    link String?
 
-  author User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+    author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId Int
 }
 
 model Order {
-  order_id String @id
-  user_id String
-  category_id String
-  receiver_location String
-  quantity Int
-  total_price Int
-  order_status String
+    orderId String @id
+    categoryId String
+    receiverLocation String
+    quantity Int
+    totalPrice Int
+    orderStatus String
 
-  owner User @relation(fields: [user_id], references: [id])
+    ownerId Int
+    owner User @relation(fields: [ownerId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
