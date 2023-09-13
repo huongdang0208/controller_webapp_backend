@@ -9,7 +9,7 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe());
 
-    await app.listen(8080);
+    await app.listen(8080, "0.0.0.0");
 
     Logger.log(`🚀  Server running on ${await app.getUrl()}`, "Bootstrap");
     Logger.log(`🚀  Graphql running on ${await app.getUrl()}/graphql`, "Bootstrap");
