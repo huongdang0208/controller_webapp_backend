@@ -1,85 +1,69 @@
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { CreateUserInput } from "./dto/create-user.input";
-import { SigninUserInput } from "./dto/signin-user.input";
+// import { JwtService } from "@nestjs/jwt";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
 import { PrismaService } from "../prisma/prisma.service";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UserService {
     constructor(
         private prisma: PrismaService,
-        private jwtService: JwtService,
+        // private jwtService: JwtService,
         private config: ConfigService,
     ) {}
 
-    async signToken(user_id, email) {
-        // const payload = {
-        //     sub: user_id,
-        //     email,
-        // };
-        // const token = await this.jwtService.signAsync(payload, {
-        //     expiresIn: "24h",
-        //     secret: this.config.get("JWT_SECRET"),
-        // });
-        //
-        // return {
-        //     access_token: token,
-        // };
+    // async signToken(user_id, email) {
+    //     const payload = {
+    //         sub: user_id,
+    //         email,
+    //     };
+    //     const token = await this.jwtService.signAsync(payload, {
+    //         expiresIn: "24h",
+    //         secret: this.config.get("JWT_SECRET"),
+    //     });
+
+    //     return {
+    //         access_token: token,
+    //     };
+    // }
+
+    async findOne(email: string) {
+        try {
+            const user = this.prisma.user.findUnique({ where: { email } });
+            if (user) {
+                return user;
+            } else {
+                throw new ForbiddenException("Credentials taken");
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
     }
 
-    async signup(createAuthenticationInput: CreateUserInput) {
-        // const hash = await argon2.hash(createAuthenticationInput.password);
-        //
-        // if (hash) {
-        //     try {
-        //         console.log("hash: ", hash, "email: ", createAuthenticationInput.username);
-        //         const user = await this.prisma.user.create({
-        //             data: {
-        //                 id: uuidv4(),
-        //                 username: createAuthenticationInput.username,
-        //                 email: createAuthenticationInput.email,
-        //                 password: hash,
-        //                 role: "user",
-        //             },
-        //         });
-        //         if (user) return this.signToken(user.id, user.email);
-        //     } catch (error) {
-        //         if (error instanceof PrismaClientKnownRequestError) {
-        //             if (error.code === "P2002") {
-        //                 throw new ForbiddenException("Credentials taken");
-        //             }
-        //         } else {
-        //             throw error;
-        //         }
-        //     }
-        // }
+    async validateUser(email: string, pass: string): Promise<any> {
+        const user = await this.findOne(email);
+        if (user && user.password === pass) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { password, ...result } = user;
+            return result;
+        }
+        return null;
     }
 
-    async signin(signinUserInput: SigninUserInput) {
-        // try {
-        //     const user = await this.prisma.user.findUniqueOrThrow({
-        //         where: {
-        //             email: signinUserInput.email,
-        //         },
-        //     });
-        //     if (user) {
-        //         const hash = await argon2.hash(signinUserInput.password);
-        //         if (hash) {
-        //             try {
-        //                 if (await argon2.verify(user.password, signinUserInput.password)) {
-        //                     delete user.password;
-        //                     return this.signToken(user.id, user.email);
-        //                 } else {
-        //                     throw new ForbiddenException("Credentials incorrect");
-        //                 }
-        //             } catch (error) {
-        //                 throw error;
-        //             }
-        //         }
-        //     }
-        // } catch (error) {
-        //     throw new Error(error);
-        // }
+    async getByEmail(email: string): Promise<User>{
+        try {
+            const user = this.prisma.user.findUnique({ where: { email } });
+            if (user) return user;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === "P2002") {
+                    throw new ForbiddenException("Credentials taken");
+                }
+            } else {
+                throw error;
+            }
+        }
     }
 }

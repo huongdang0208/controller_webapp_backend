@@ -12,8 +12,8 @@ datasource db {
 
 model User {
     id Int @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
     email String @unique
     password String
@@ -23,7 +23,6 @@ model User {
 
     bookmarks BookMark[]
     orders Order[]
-
 }
 
 // onDelete: Cascad mean when parent model of this model is deleted, in case when User model is deleted, the Bookmark is delete

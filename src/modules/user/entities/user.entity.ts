@@ -3,8 +3,8 @@ import { IsEmail, IsString } from "class-validator";
 
 @ObjectType()
 export class User {
-    @Field(() => String, { nullable: false })
-    id: string;
+    @Field(() => Number, { nullable: false })
+    id: number;
 
     @Field(() => String, { nullable: false })
     @IsString()
@@ -18,8 +18,8 @@ export class User {
     @IsString()
     password: string;
 
-    @Field(() => [String], { nullable: true })
-    order_id: [string];
+    // @Field(() => Number, { nullable: true })
+    // order_id: number;
 
     @Field({ nullable: true })
     role: string;
