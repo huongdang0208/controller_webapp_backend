@@ -14,9 +14,9 @@ export class User {
     @IsEmail()
     email: string;
 
-    @Field(() => String, { nullable: false })
-    @IsString()
-    password: string;
+    // @Field(() => String, { nullable: true })
+    // @IsString()
+    // password: string;
 
     // @Field(() => Number, { nullable: true })
     // order_id: number;

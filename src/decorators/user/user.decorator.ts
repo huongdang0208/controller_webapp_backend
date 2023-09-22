@@ -1,11 +1,7 @@
 import {createParamDecorator, ExecutionContext} from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
-export const User = createParamDecorator((data: string | undefined, ctx: ExecutionContext) => {
-    const request: Express.Request = ctx.switchToHttp().getRequest();
-
-    if (data) {
-        return request.user[data];
-    }
-
-    return request.user;
+export const UserDecorator = createParamDecorator((data: unknown, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req.user;
 });

@@ -1,13 +1,12 @@
-import { Resolver, Mutation, Args } from "@nestjs/graphql";
-import { HttpCode, UseGuards } from "@nestjs/common";
+import { Resolver, Mutation, Args, Context } from "@nestjs/graphql";
+import { HttpCode, Request, UseGuards } from "@nestjs/common";
 
 import { AuthenticateService } from "./authenticate.service";
 import { Authenticate } from "./entities/authenticate.entity";
 import { RegisterAuthenticateInput } from "./dto/register-authenticate.input";
 import { LoginAuthenticateInput } from "./dto/login-authenticate.input";
-import { LogInWithCredentialsGuard } from "../../guards/login-gql.guard";
-import { AuthenticatedGuard } from "../../guards/authenticated-gql.guard";
-import { SessionAccount } from "../../decorators/graphql/session-account.decorator";
+import { JwtAuthGuard } from "../../guards/jwt-authenticate.guard";
+import { GqlAuthGuard } from '../../guards/gql-authenticate.guard';
 
 @Resolver(() => Authenticate)
 export class AuthenticateResolver {
@@ -23,19 +22,21 @@ export class AuthenticateResolver {
     }
 
     @HttpCode(200)
-    @UseGuards(LogInWithCredentialsGuard)
     @Mutation(() => Authenticate)
+    @UseGuards(GqlAuthGuard)
     async login(
         @Args("loginAuthenticateInput")
         loginAuthenticateInput: LoginAuthenticateInput,
+        @Context() context
     ) {
-        return this.authenticateService.login(loginAuthenticateInput);
+        console.log(context)
+        return this.authenticateService.login(context.user, loginAuthenticateInput);
     }
 
     @HttpCode(200)
-    @UseGuards(AuthenticatedGuard)
+    @UseGuards(JwtAuthGuard)
     @Mutation(() => Authenticate)
-    async authenticate(@SessionAccount() user) {
-        return user;
+    async authenticate(@Request() req) {
+        return req;
     }
 }
