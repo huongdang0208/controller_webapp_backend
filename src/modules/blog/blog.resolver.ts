@@ -38,7 +38,6 @@ export class BlogResolver {
       @Context() context,
       @Args({ name: "image", type: () => GraphQLUpload, nullable: true, defaultValue: null }) image: FileUpload | null
     ) {
-        console.log(context)
         return this.blogService.createBlog( updateBlogInput, image);
     }
 }

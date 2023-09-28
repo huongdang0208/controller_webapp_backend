@@ -92,17 +92,14 @@ export class BlogService {
             }
             if (image) {
                 const { createReadStream, filename, mimetype } = await image;
-                const path = `./images/${filename}`;
+                const path = `./images/blog/${filename}`;
 
                 await createReadStream().pipe(createWriteStream(path));
 
                 const blog = await this.prisma.blog.update({
                     where: { blog_id: input.blog_id },
                     data: {
-                        title: input.title,
-                        description: input.description,
-                        images: path,
-                        updatedAt: Date(),
+                        ...input
                     },
                 });
 

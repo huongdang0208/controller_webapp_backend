@@ -6,14 +6,11 @@ export class UpdateBlogInput {
     @Field(() => Int, { nullable: false })
     blog_id: number;
 
-    @Field(() => String, { nullable: false })
+    @Field(() => String, { nullable: true })
     title: string;
 
-    @Field(() => String, { nullable: false })
+    @Field(() => String, { nullable: true })
     description: string;
-
-    @Field(() => String)
-    images: string;
 
     // @Field()
     // category: Prisma.Blog

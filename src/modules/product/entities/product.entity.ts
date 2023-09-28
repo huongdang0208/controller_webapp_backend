@@ -1,16 +1,16 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { DataCategory } from "../../../utils/types/data.interface";
+import { Data } from "./data.entity";
 
 @ObjectType()
 export class Product {
     @Field(() => Int)
     category_id: number;
-    
+
     @Field(() => String, { nullable: false })
     category_name: string;
 
-    @Field({ nullable: false })
-    data: DataCategory;
+    @Field(() => Data, { nullable: true })
+    data: Data;
 
     @Field(() => String, { nullable: false })
     detail_description: string;
@@ -19,7 +19,7 @@ export class Product {
     instruction: string;
 
     @Field({ nullable: true })
-    images: string[];
+    images: string;
 
     @Field(() => String, { nullable: true })
     category_status: string;

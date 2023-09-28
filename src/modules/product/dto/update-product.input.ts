@@ -1,16 +1,19 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType, Int } from "@nestjs/graphql";
 
 import { DataInput } from './data.input';
 
 @InputType()
-export class CreateProductInput {
-    @Field(() => String, { nullable: false })
+export class UpdateProductInput {
+    @Field(() => Int, { nullable: false })
+    category_id: number;
+    
+    @Field(() => String, { nullable: true })
     category_name: string;
 
     @Field(() => DataInput, { nullable: true })
     data: DataInput;
 
-    @Field(() => String, { nullable: false })
+    @Field(() => String, { nullable: true })
     detail_description: string;
 
     @Field(() => String, { nullable: true })

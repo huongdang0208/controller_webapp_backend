@@ -4,6 +4,7 @@ import { createWriteStream } from "fs";
 import { FileUpload } from "../../utils/types/data.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductInput } from "./dto/create-product.input";
+import { UpdateProductInput } from './dto/update-product.input';
 
 @Injectable()
 export class ProductService {
@@ -64,6 +65,39 @@ export class ProductService {
                     },
                 });
                 return product;
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
+    }
+
+    async updateProduct(input: UpdateProductInput, image: FileUpload) {
+        try {
+            if (!input.category_id) {
+                throw new Error('Field category_id is required, but not provided')
+            }
+            if (image) {
+                const { createReadStream, filename, mimetype } = await image;
+                const path = `./images/category/${filename}`;
+
+                await createReadStream().pipe(createWriteStream(path));
+
+                const product = await this.prisma.category.update({
+                    where: { category_id: input.category_id },
+                    data: {
+                        category_name: input.category_name,
+                        category_status: input.category_status,
+                        detail_description: input.detail_description,
+                        instruction: input.instruction,
+                        images: path,
+                    }
+                })
+
+                // const dataCategory = await this.prisma.data.update({
+                //     where: {
+                //         data_id: product
+                //     }
+                // })
             }
         } catch (err) {
             throw new Error(err);

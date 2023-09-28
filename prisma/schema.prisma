@@ -81,9 +81,9 @@ model CategoriesOnPosts {
 model Data {
     data_id Int @id @default(autoincrement())
 
-    size   Int
-    weight Int
-    power  Int
+    size   Int?
+    weight Int?
+    power  Int?
 
     category    Category @relation(fields: [category_id], references: [category_id])
     category_id Int      @unique
@@ -95,8 +95,8 @@ model File {
     size       Int
     mimetype   String
     path       String
-    blogId     Int
-    categoryId Int
+    blogId     Int?
+    categoryId Int?
 
     created_at DateTime @default(now())
 }

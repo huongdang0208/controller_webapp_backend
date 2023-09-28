@@ -12,9 +12,6 @@ export class CreateBlogInput {
     @Field(() => String, { nullable: false })
     description: string;
 
-    @Field(() => String)
-    images: string;
-
     // @Field()
     // category: Prisma.Blog
 
