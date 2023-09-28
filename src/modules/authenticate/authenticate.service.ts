@@ -1,12 +1,12 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-
-import { RegisterAuthenticateInput } from "./dto/register-authenticate.input";
-import { LoginAuthenticateInput } from "./dto/login-authenticate.input";
+import { LoginInput } from "./dto/login.dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaService } from "../prisma/prisma.service";
+import { RoleEnum } from "../../types/enum.type";
+import { RegisterAuthenticateInput } from "./dto/register.dto";
 
 @Injectable()
 export class AuthenticateService {
@@ -16,46 +16,33 @@ export class AuthenticateService {
         private readonly config: ConfigService,
     ) {}
 
-    async signTokens(user_id, email) {
-        const access_token = await this.jwtService.signAsync(
-            {
-                sub: user_id,
-                email,
-            },
-            {
-                secret: this.config.get("JWT_ACCESS_SECRET"),
-                expiresIn: "1d",
-            },
-        );
-
-        const refresh_token = await this.jwtService.signAsync(
-            {
-                sub: user_id,
-                email,
-                access_token,
-            },
-            {
-                secret: this.config.get("JWT_REFRESH_SECRET"),
-                expiresIn: "7d",
-            },
-        );
+    private async signTokens(userId: number, email: string) {
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync(
+                {
+                    sub: userId,
+                    email,
+                },
+                {
+                    secret: this.config.get("jwt.secret"),
+                    expiresIn: this.config.get<string>("jwt.liveTime"),
+                },
+            ),
+            this.jwtService.signAsync(
+                {
+                    sub: userId,
+                },
+                {
+                    secret: this.config.get("jwt.secret"),
+                    expiresIn: this.config.get<string>("jwt.refreshTokenLiveTime"),
+                },
+            ),
+        ]);
 
         return {
-            access_token,
-            refresh_token,
+            accessToken,
+            refreshToken,
         };
-    }
-
-    async hashData(data: string) {
-        const saltRounds = 5;
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(data, salt);
-        return hash;
-    }
-
-    async updateRefreshToken(userId: number, refreshToken: string) {
-        const hashedRefreshToken = await this.hashData(refreshToken);
-        await this.prisma.user.update({ where: { id: userId }, data: { refresh_token: hashedRefreshToken } });
     }
 
     async validateUser(email: string, password: string) {
@@ -82,25 +69,30 @@ export class AuthenticateService {
 
     async register(registerAuthenticateInput: RegisterAuthenticateInput) {
         const saltRounds = 10;
-        try {
-            const salt = await bcrypt.genSalt(saltRounds);
-            const hash = await bcrypt.hash(registerAuthenticateInput.password, salt);
 
-            const user = await this.prisma.user.create({
+        try {
+            // Check username and email exist first
+            const userExist = await this.prisma.user.findMany({
+                where: {
+                    OR: [{ username: registerAuthenticateInput.username }, { email: registerAuthenticateInput.email }],
+                },
+            });
+
+            if (userExist.length > 0) {
+                throw new BadRequestException("Username or email already exist");
+            }
+
+            // Create user
+            const hash = await bcrypt.hash(registerAuthenticateInput.password, saltRounds);
+
+            return this.prisma.user.create({
                 data: {
                     username: registerAuthenticateInput.username,
                     email: registerAuthenticateInput.email,
                     password: hash,
-                    role: "user",
+                    role: RoleEnum.USER,
                 },
             });
-            const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
-            await this.updateRefreshToken(user.id, refresh_token);
-            return {
-                access_token,
-                refresh_token,
-                user,
-            };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
@@ -112,7 +104,7 @@ export class AuthenticateService {
         }
     }
 
-    async login(loginAuthenticateInput: LoginAuthenticateInput) {
+    async login(loginAuthenticateInput: LoginInput) {
         try {
             const user = await this.prisma.user.findUniqueOrThrow({
                 where: {
@@ -123,46 +115,56 @@ export class AuthenticateService {
             const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
 
             if (!result) {
-                throw new UnauthorizedException("Credentials incorrect");
+                throw new BadRequestException("Credentials incorrect");
             }
 
-            const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
+            const { accessToken, refreshToken } = await this.signTokens(user.id, user.email);
+
+            // Save to session
+            await this.prisma.session.create({
+                data: {
+                    userId: user.id,
+                    accessToken,
+                    refreshToken,
+                },
+            });
 
             return {
-                access_token,
-                refresh_token,
+                accessToken,
+                refreshToken,
                 user: user,
             };
         } catch (error) {
+            console.error(error);
             throw error;
         }
     }
 
     async getNewTokens(email: string, refreshToken: string) {
-        try {
-            const user = await this.prisma.user.findUnique({ where: { email } });
-            if (!user || !user.refresh_token) {
-                throw new ForbiddenException("Access denied");
-            }
-            const isRefreshTokenMatch = await bcrypt.compare(refreshToken, user.refresh_token);
-            if (!isRefreshTokenMatch) throw new ForbiddenException("Access denied");
-            const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
-            await this.updateRefreshToken(user.id, refresh_token);
-            return {
-                access_token,
-                refresh_token,
-                user,
-            };
-        } catch (err) {
-            throw new Error(err);
-        }
+        // try {
+        //     const user = await this.prisma.user.findUnique({ where: { email } });
+        //     if (!user || !user.refresh_token) {
+        //         throw new ForbiddenException("Access denied");
+        //     }
+        //     const isRefreshTokenMatch = await bcrypt.compare(refreshToken, user.refresh_token);
+        //     if (!isRefreshTokenMatch) throw new ForbiddenException("Access denied");
+        //     const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
+        //     await this.updateRefreshToken(user.id, refresh_token);
+        //     return {
+        //         access_token,
+        //         refresh_token,
+        //         user,
+        //     };
+        // } catch (err) {
+        //     throw new Error(err);
+        // }
     }
 
     async logout(email: string) {
-        await this.prisma.user.update({
-            where: { email, refresh_token: { not: null } },
-            data: { refresh_token: null },
-        });
-        return { isLogout: true };
+        // await this.prisma.user.update({
+        //     where: { email, refresh_token: { not: null } },
+        //     data: { refresh_token: null },
+        // });
+        // return { isLogout: true };
     }
 }

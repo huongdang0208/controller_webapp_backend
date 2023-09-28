@@ -1,15 +1,14 @@
 import { Field, InputType } from "@nestjs/graphql";
-import * as prisma from '@prisma/client'
-
-// import { DataCategory } from "../../../utils/types/data.interface";
+import { Data } from "@prisma/client";
 
 @InputType()
 export class CreateProductInput {
     @Field(() => String, { nullable: false })
     category_name: string;
 
-    @Field({ nullable: true })
-    data: prisma.Data;
+    // TODO: fix this
+    // @Field(() => String, { nullable: true })
+    // data: string;
 
     @Field(() => String, { nullable: false })
     detail_description: string;
@@ -17,7 +16,7 @@ export class CreateProductInput {
     @Field(() => String, { nullable: true })
     instruction: string;
 
-    @Field({ nullable: true })
+    @Field(() => [String], { nullable: true })
     images: string[];
 
     @Field(() => String, { nullable: true })
