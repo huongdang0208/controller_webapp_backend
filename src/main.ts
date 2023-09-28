@@ -1,13 +1,8 @@
 import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import session from 'express-session';
-import passport from 'passport';
-import { ConfigService } from '@nestjs/config';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import * as bodyParser from 'body-parser';
-import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js'
-
+import session from "express-session";
+import passport from "passport";
+import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./app.module";
 
 process.env.TZ = "Asia/Ho_Chi_Minh";
@@ -15,36 +10,29 @@ process.env.TZ = "Asia/Ho_Chi_Minh";
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    app.useGlobalPipes(new ValidationPipe({
-        transform: true
-      }));
-     
-      const configService = app.get(ConfigService);
-     
-      app.use(
-        session({
-          name: 'DAVINCI_SESSION_ID',
-          secret: configService.get('SESSION_SECRET'),
-          resave: false,
-          // when user is login, session is created, and if not, we don't
-          saveUninitialized: false,
-          cookie: {
-            maxAge: 1000*60*60*24,
-
-          }
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
         }),
-      );
+    );
 
-      app.use(cors({
-        origin: 'https://sandbox.embed.apollographql.com',
-        credentials: true,
-      }));
-     
-      app.use(passport.initialize());
-      app.use(passport.session());
-      app.use(cookieParser());
-      app.use(bodyParser.json()); 
-      app.use(graphqlUploadExpress());
+    const configService = app.get(ConfigService);
+
+    app.use(
+        session({
+            name: "DAVINCI_SESSION_ID",
+            secret: configService.get("session.secret"),
+            resave: false,
+            // when user is login, session is created, and if not, we don't
+            saveUninitialized: false,
+            cookie: {
+                maxAge: 1000 * 60 * 60 * 24,
+            },
+        }),
+    );
+
+    app.use(passport.initialize());
+    app.use(passport.session());
 
     await app.listen(8080, "0.0.0.0");
 

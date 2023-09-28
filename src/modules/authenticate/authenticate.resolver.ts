@@ -5,9 +5,8 @@ import { AuthenticateService } from "./authenticate.service";
 import { Authenticate } from "./entities/authenticate.entity";
 import { RegisterAuthenticateInput } from "./dto/register-authenticate.input";
 import { LoginAuthenticateInput } from "./dto/login-authenticate.input";
-import { GqlAuthGuard } from '../../guards/gql.authenticate.guard';
 import { LogoutResponse } from "./dto/logout-authenticate.response";
-import { RefreshTokenGuard } from '../../guards/refresh-jwt.authenticate.guard';
+import { GqlAuthGuard } from "./guards/gql-auth.guard";
 
 @Resolver(() => Authenticate)
 export class AuthenticateResolver {
@@ -26,23 +25,21 @@ export class AuthenticateResolver {
     @Mutation(() => Authenticate)
     @UseGuards(GqlAuthGuard)
     async login(
-        @Args("loginAuthenticateInput")
+        @Args()
         loginAuthenticateInput: LoginAuthenticateInput,
-        @Context() context
     ) {
-        return this.authenticateService.login(context.user, loginAuthenticateInput);
+        return this.authenticateService.login(loginAuthenticateInput);
     }
 
     @HttpCode(200)
     @Mutation(() => Authenticate)
-    @UseGuards(RefreshTokenGuard)
     async get_new_tokens(@Context() context) {
-        return this.authenticateService.getNewTokens(context.req.user.email, context.req.user.refresh_token)
+        return this.authenticateService.getNewTokens(context.req.user.email, context.req.user.refresh_token);
     }
 
     @HttpCode(200)
     @Mutation(() => LogoutResponse)
     async logout(@Context() context) {
-        return this.authenticateService.logout(context.user.email)
+        return this.authenticateService.logout(context.user.email);
     }
 }
