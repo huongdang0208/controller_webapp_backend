@@ -8,6 +8,10 @@ export class Authenticate {
   @IsString()
   access_token: string;
 
+  @Field(() => String)
+  @IsString()
+  refresh_token: string;
+
   @Field(() => User)
   user: User;
 }

@@ -5,6 +5,8 @@ import passport from 'passport';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import * as bodyParser from 'body-parser';
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js'
 
 import { AppModule } from "./app.module";
 
@@ -41,6 +43,8 @@ async function bootstrap() {
       app.use(passport.initialize());
       app.use(passport.session());
       app.use(cookieParser());
+      app.use(bodyParser.json()); 
+      app.use(graphqlUploadExpress());
 
     await app.listen(8080, "0.0.0.0");
 

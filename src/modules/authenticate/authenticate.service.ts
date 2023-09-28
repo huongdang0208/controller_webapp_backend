@@ -7,7 +7,7 @@ import { RegisterAuthenticateInput } from "./dto/register-authenticate.input";
 import { LoginAuthenticateInput } from "./dto/login-authenticate.input";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaService } from "../prisma/prisma.service";
-import { User } from '../user/entities/user.entity';
+import { User } from "../user/entities/user.entity";
 
 @Injectable()
 export class AuthenticateService {
@@ -17,17 +17,46 @@ export class AuthenticateService {
         private readonly config: ConfigService,
     ) {}
 
-    async signToken(user_id, email) {
-        const payload = {
-            sub: user_id,
-            email,
-        };
-        const token = await this.jwtService.signAsync(payload, {
-            expiresIn: "24h",
-            secret: this.config.get("JWT_SECRET"),
-        });
+    async signTokens(user_id, email) {
+        const access_token = await this.jwtService.signAsync(
+            {
+                sub: user_id,
+                email,
+            },
+            {
+                secret: this.config.get("JWT_ACCESS_SECRET"),
+                expiresIn: "1d",
+            },
+        );
 
-        return token;
+        const refresh_token = await this.jwtService.signAsync(
+            {
+                sub: user_id,
+                email,
+                access_token,
+            },
+            {
+                secret: this.config.get("JWT_REFRESH_SECRET"),
+                expiresIn: "7d",
+            },
+        );
+
+        return {
+            access_token,
+            refresh_token,
+        };
+    }
+
+    async hashData(data: string) {
+        const saltRounds = 5;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(data, salt);
+        return hash;
+    }
+
+    async updateRefreshToken(userId: number, refreshToken: string) {
+        const hashedRefreshToken = await this.hashData(refreshToken);
+        await this.prisma.user.update({ where: { id: userId }, data: { refresh_token: hashedRefreshToken } });
     }
 
     async validateUser(email: string, password: string) {
@@ -66,10 +95,12 @@ export class AuthenticateService {
                     role: "user",
                 },
             });
-            const token = this.signToken(user.id, user.email);
+            const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
+            await this.updateRefreshToken(user.id, refresh_token);
             return {
-                access_token: token,
-                user: user,
+                access_token,
+                refresh_token,
+                user,
             };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
@@ -93,9 +124,10 @@ export class AuthenticateService {
             const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
 
             if (result) {
-                const token = this.signToken(user.id, user.email);
+                const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
                 return {
-                    access_token: token,
+                    access_token,
+                    refresh_token,
                     user: user,
                 };
             } else {
@@ -104,5 +136,30 @@ export class AuthenticateService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async getNewTokens (email: string, refreshToken: string) {
+        try {
+            const user = await this.prisma.user.findUnique({ where: {email}})
+            if (!user || !user.refresh_token) {
+                throw new ForbiddenException('Access denied');
+            }
+            const isRefreshTokenMatch = await bcrypt.compare(refreshToken, user.refresh_token);
+            if (!isRefreshTokenMatch) throw new ForbiddenException('Access denied');
+            const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
+            await this.updateRefreshToken(user.id, refresh_token);
+            return {
+                access_token,
+                refresh_token,
+                user
+            }
+        } catch (err) {
+            throw new Error(err)
+        }
+    }
+
+    async logout(email: string) {
+        await this.prisma.user.update({ where: { email, refresh_token: { not: null } }, data: { refresh_token: null } });
+        return { isLogout: true }
     }
 }

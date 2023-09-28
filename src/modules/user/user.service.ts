@@ -13,22 +13,6 @@ export class UserService {
         // private jwtService: JwtService,
         private config: ConfigService,
     ) {}
-
-    // async signToken(user_id, email) {
-    //     const payload = {
-    //         sub: user_id,
-    //         email,
-    //     };
-    //     const token = await this.jwtService.signAsync(payload, {
-    //         expiresIn: "24h",
-    //         secret: this.config.get("JWT_SECRET"),
-    //     });
-
-    //     return {
-    //         access_token: token,
-    //     };
-    // }
-
     async findOne(email: string) {
         try {
             const user = this.prisma.user.findUnique({ where: { email } });

@@ -8,6 +8,5 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     }
 
     cleanDb() {
-        this.$transaction([this.bookMark.deleteMany(), this.user.deleteMany()]);
     }
 }

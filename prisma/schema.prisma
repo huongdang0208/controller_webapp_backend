@@ -11,45 +11,92 @@ datasource db {
 }
 
 model User {
-    id Int @id @default(autoincrement())
+    id         Int      @id @default(autoincrement())
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    email String @unique
+    email    String @unique
     password String
 
-    username String
-    role String
+    username      String
+    role          String
+    refresh_token String?
 
-    bookmarks BookMark[]
     orders Order[]
 }
 
 // onDelete: Cascad mean when parent model of this model is deleted, in case when User model is deleted, the Bookmark is delete
-model BookMark {
-    id Int @id @default (autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    title String
-    description String
-    link String?
-
-    author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-    authorId Int
-}
 
 model Order {
-    orderId String @id
-    categoryId String
+    orderId          String @id
+    categoryId       String
     receiverLocation String
-    quantity Int
-    totalPrice Int
-    orderStatus String
+    quantity         Int
+    totalPrice       Int
+    orderStatus      String
 
     ownerId Int
-    owner User @relation(fields: [ownerId], references: [id])
+    owner   User @relation(fields: [ownerId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Blog {
+    blog_id     Int                 @id @default(autoincrement())
+    title       String
+    description String
+    images      String
+    category    CategoriesOnPosts[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Category {
+    category_id Int @id @default(autoincrement())
+
+    category_name      String
+    data               Data?
+    detail_description String
+    instruction        String
+    images             String
+    category_status    String
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    blog CategoriesOnPosts[]
+}
+
+model CategoriesOnPosts {
+    blog       Blog     @relation(fields: [blogId], references: [blog_id])
+    blogId     Int
+    category   Category @relation(fields: [categoryId], references: [category_id])
+    categoryId Int
+
+    @@id([blogId, categoryId])
+}
+
+model Data {
+    data_id Int @id @default(autoincrement())
+
+    size   Int
+    weight Int
+    power  Int
+
+    category    Category @relation(fields: [category_id], references: [category_id])
+    category_id Int      @unique
+}
+
+model File {
+    file_id    Int    @id @default(autoincrement())
+    filename   String
+    size       Int
+    mimetype   String
+    path       String
+    blogId     Int
+    categoryId Int
+
+    created_at DateTime @default(now())
 }
