@@ -23,13 +23,13 @@ export class ProductService {
                         category_name: input.category_name,
                         detail_description: input.detail_description,
                         instruction: input.instruction,
-                        data: {
-                            create: {
-                                size: input?.data?.size,
-                                weight: input?.data?.weight,
-                                power: input?.data?.power,
-                            },
-                        },
+                        // data: {
+                        //     create: {
+                        //         size: input?.data?.size,
+                        //         weight: input?.data?.weight,
+                        //         power: input?.data?.power,
+                        //     },
+                        // },
                         images: path,
                         category_status: input.category_status,
                     },
@@ -53,13 +53,13 @@ export class ProductService {
                         category_name: input.category_name,
                         detail_description: input.detail_description,
                         instruction: input.instruction,
-                        data: {
-                            create: {
-                                size: input?.data?.size,
-                                weight: input?.data?.weight,
-                                power: input?.data?.power,
-                            },
-                        },
+                        // data: {
+                        //     create: {
+                        //         size: input?.data?.size,
+                        //         weight: input?.data?.weight,
+                        //         power: input?.data?.power,
+                        //     },
+                        // },
                         images: "",
                         category_status: input.category_status,
                     },

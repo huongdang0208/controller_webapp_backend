@@ -7,11 +7,24 @@ import { AuthenticateResolver } from "./authenticate.resolver";
 import { LocalSerializer } from "../../utils/serializer/local.serializer";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { UserModule } from "../user/user.module";
-import { AccessTokenStrategy } from "./strategies/access-jwt.strategy";
-import { RefreshTokenStrategy } from "./strategies/refresh-jwt.strategy";
+import { JwtStrategy } from "./strategies/jwt.strategy";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
-    imports: [JwtModule.register({}), PassportModule, UserModule],
-    providers: [AuthenticateResolver, AuthenticateService, LocalSerializer, LocalStrategy, AccessTokenStrategy, RefreshTokenStrategy],
+    imports: [
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => ({
+                secret: config.get("jwt.secret"),
+                signOptions: {
+                    expiresIn: config.get("jwt.liveTime"),
+                },
+            }),
+        }),
+        PassportModule,
+        UserModule,
+    ],
+    providers: [AuthenticateResolver, AuthenticateService, LocalSerializer, LocalStrategy, JwtStrategy],
 })
 export class AuthenticateModule {}
