@@ -5,12 +5,12 @@ import { DataCategory } from "../../../utils/types/data.interface";
 export class Product {
     @Field(() => Int)
     category_id: number;
-    
+
     @Field(() => String, { nullable: false })
     category_name: string;
 
-    @Field({ nullable: false })
-    data: DataCategory;
+    // @Field({ nullable: false })
+    // data: DataCategory;
 
     @Field(() => String, { nullable: false })
     detail_description: string;
@@ -18,7 +18,7 @@ export class Product {
     @Field(() => String, { nullable: true })
     instruction: string;
 
-    @Field({ nullable: true })
+    @Field(() => [String], { nullable: true })
     images: string[];
 
     @Field(() => String, { nullable: true })

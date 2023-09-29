@@ -1,48 +1,50 @@
 import { Resolver, Mutation, Args, Context } from "@nestjs/graphql";
-import { HttpCode, UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 
 import { AuthenticateService } from "./authenticate.service";
-import { Authenticate } from "./entities/authenticate.entity";
-import { RegisterAuthenticateInput } from "./dto/register-authenticate.input";
-import { LoginAuthenticateInput } from "./dto/login-authenticate.input";
-import { GqlAuthGuard } from '../../guards/gql.authenticate.guard';
+import { LoginInput, LoginResponseBlock } from "./dto/login.dto";
 import { LogoutResponse } from "./dto/logout-authenticate.response";
-import { RefreshTokenGuard } from '../../guards/refresh-jwt.authenticate.guard';
+import { GqlLocalAuthGuard } from "./guards/gql-auth.guard";
+import { RegisterAuthenticateInput, RegisterResponseBlock } from "./dto/register.dto";
 
-@Resolver(() => Authenticate)
+@Resolver()
 export class AuthenticateResolver {
     constructor(private readonly authenticateService: AuthenticateService) {}
 
-    @HttpCode(201)
-    @Mutation(() => Authenticate)
+    @Mutation(() => RegisterResponseBlock)
     async register(
-        @Args("registerAuthenticateInput")
+        @Args("params")
         registerAuthenticateInput: RegisterAuthenticateInput,
-    ) {
-        return this.authenticateService.register(registerAuthenticateInput);
+    ): Promise<RegisterResponseBlock> {
+        const user = await this.authenticateService.register(registerAuthenticateInput);
+
+        return {
+            message: "User registered successfully",
+            node: {
+                user,
+            },
+        };
     }
 
-    @HttpCode(200)
-    @Mutation(() => Authenticate)
-    @UseGuards(GqlAuthGuard)
+    @Mutation(() => LoginResponseBlock)
+    @UseGuards(GqlLocalAuthGuard)
     async login(
         @Args("loginAuthenticateInput")
-        loginAuthenticateInput: LoginAuthenticateInput,
-        @Context() context
+        loginAuthenticateInput: LoginInput,
     ) {
-        return this.authenticateService.login(context.user, loginAuthenticateInput);
+        return {
+            message: "logged in successfully",
+            node: this.authenticateService.login(loginAuthenticateInput),
+        }
     }
 
-    @HttpCode(200)
-    @Mutation(() => Authenticate)
-    @UseGuards(RefreshTokenGuard)
-    async get_new_tokens(@Context() context) {
-        return this.authenticateService.getNewTokens(context.req.user.email, context.req.user.refresh_token)
-    }
+    // @Mutation(() => Authenticate)
+    // async get_new_tokens(@Context() context) {
+    //     return this.authenticateService.getNewTokens(context.req.user.email, context.req.user.refresh_token);
+    // }
 
-    @HttpCode(200)
     @Mutation(() => LogoutResponse)
     async logout(@Context() context) {
-        return this.authenticateService.logout(context.user.email)
+        return this.authenticateService.logout(context.user.email);
     }
 }
