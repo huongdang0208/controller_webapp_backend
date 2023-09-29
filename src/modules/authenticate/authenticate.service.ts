@@ -1,12 +1,12 @@
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { LoginInput } from "./dto/login.dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaService } from "../prisma/prisma.service";
-import { RoleEnum } from "../../types/enum.type";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
+import { Role } from "../../utils/types/role.enum";
 
 @Injectable()
 export class AuthenticateService {
@@ -90,7 +90,7 @@ export class AuthenticateService {
                     username: registerAuthenticateInput.username,
                     email: registerAuthenticateInput.email,
                     password: hash,
-                    role: RoleEnum.USER,
+                    role: Role.User,
                 },
             });
         } catch (error) {
