@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -7,6 +7,9 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaService } from "../prisma/prisma.service";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
 import { Role } from "../../utils/types/role.enum";
+import { RefreshTokenInput } from "./dto/refreshToken.dto";
+import { GraphQLError } from "graphql/error";
+import { LogoutInput } from "./dto/logout.dto";
 
 @Injectable()
 export class AuthenticateService {
@@ -53,13 +56,13 @@ export class AuthenticateService {
                 if (result) {
                     return user;
                 } else {
-                    throw new ForbiddenException("Credentials incorrect");
+                    throw new GraphQLError("Credentials incorrect");
                 }
             }
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials taken");
+                    throw new GraphQLError("Credentials taken");
                 }
             } else {
                 throw error;
@@ -79,7 +82,7 @@ export class AuthenticateService {
             });
 
             if (userExist.length > 0) {
-                throw new BadRequestException("Username or email already exist");
+                throw new GraphQLError("Username or email already exist");
             }
 
             // Create user
@@ -96,7 +99,7 @@ export class AuthenticateService {
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials taken");
+                    throw new GraphQLError("Credentials taken");
                 }
             } else {
                 throw error;
@@ -115,7 +118,7 @@ export class AuthenticateService {
             const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
 
             if (!result) {
-                throw new BadRequestException("Credentials incorrect");
+                throw new GraphQLError("Credentials incorrect");
             }
 
             const { accessToken, refreshToken } = await this.signTokens(user.id, user.email);
@@ -140,31 +143,74 @@ export class AuthenticateService {
         }
     }
 
-    async getNewTokens(email: string, refreshToken: string) {
-        // try {
-        //     const user = await this.prisma.user.findUnique({ where: { email } });
-        //     if (!user || !user.refresh_token) {
-        //         throw new ForbiddenException("Access denied");
-        //     }
-        //     const isRefreshTokenMatch = await bcrypt.compare(refreshToken, user.refresh_token);
-        //     if (!isRefreshTokenMatch) throw new ForbiddenException("Access denied");
-        //     const { access_token, refresh_token } = await this.signTokens(user.id, user.email);
-        //     await this.updateRefreshToken(user.id, refresh_token);
-        //     return {
-        //         access_token,
-        //         refresh_token,
-        //         user,
-        //     };
-        // } catch (err) {
-        //     throw new Error(err);
-        // }
+    async refreshToken(params: RefreshTokenInput, accessToken: string) {
+        try {
+            // Get userId from accessToken
+            const { sub: userId } = await this.jwtService.verifyAsync(accessToken, {
+                secret: this.config.get("jwt.secret"),
+                ignoreExpiration: true,
+            });
+
+            const session = await this.prisma.session.findFirst({
+                where: {
+                    userId,
+                    refreshToken: params.refreshToken,
+                },
+                include: {
+                    user: true,
+                },
+            });
+
+            if (!session) {
+                throw new GraphQLError("Session Invalid");
+            }
+
+            const { accessToken: newAccessToken } = await this.signTokens(session.user.id, session.user.email);
+
+            // Update session
+            await this.prisma.session.update({
+                where: {
+                    id: session.id,
+                },
+                data: {
+                    accessToken: newAccessToken,
+                },
+            });
+
+            return {
+                accessToken: newAccessToken,
+                refreshToken: session.refreshToken,
+                user: session.user,
+            };
+        } catch (err) {
+            throw new GraphQLError(err);
+        }
     }
 
-    async logout(email: string) {
-        // await this.prisma.user.update({
-        //     where: { email, refresh_token: { not: null } },
-        //     data: { refresh_token: null },
-        // });
-        // return { isLogout: true };
+    async logout(params: LogoutInput, sessionId: number) {
+        try {
+            await this.prisma.session.delete({
+                where: {
+                    id: sessionId,
+                    refreshToken: params.refreshToken,
+                },
+            });
+
+            return true;
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
+    async getSessionByAccessToken(token: string, userId: number) {
+        return this.prisma.session.findFirst({
+            where: {
+                accessToken: token,
+                userId,
+            },
+            include: {
+                user: true,
+            },
+        });
     }
 }
