@@ -1,11 +1,14 @@
 import { Resolver, Mutation, Args, Context } from "@nestjs/graphql";
 import { UseGuards } from "@nestjs/common";
-
 import { AuthenticateService } from "./authenticate.service";
 import { LoginInput, LoginResponseBlock } from "./dto/login.dto";
-import { LogoutResponse } from "./dto/logout-authenticate.response";
+import { LogoutInput, LogoutResponseBlock } from "./dto/logout.dto";
 import { GqlLocalAuthGuard } from "./guards/gql-auth.guard";
 import { RegisterAuthenticateInput, RegisterResponseBlock } from "./dto/register.dto";
+import { RefreshTokenInput } from "./dto/refreshToken.dto";
+import { Request } from "express";
+import { GraphQLError } from "graphql/error";
+import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 
 @Resolver()
 export class AuthenticateResolver {
@@ -34,17 +37,36 @@ export class AuthenticateResolver {
     ) {
         return {
             message: "logged in successfully",
-            node: this.authenticateService.login(loginAuthenticateInput),
-        }
+            node: await this.authenticateService.login(loginAuthenticateInput),
+        };
     }
 
-    // @Mutation(() => Authenticate)
-    // async get_new_tokens(@Context() context) {
-    //     return this.authenticateService.getNewTokens(context.req.user.email, context.req.user.refresh_token);
-    // }
+    @Mutation(() => LoginResponseBlock)
+    async refreshToken(@Args("params") params: RefreshTokenInput, @Context("req") req: Request) {
+        const headers = req.headers;
 
-    @Mutation(() => LogoutResponse)
-    async logout(@Context() context) {
-        return this.authenticateService.logout(context.user.email);
+        if (!headers.authorization) throw new GraphQLError("Unauthorized");
+
+        // Get access token from headers
+        const accessToken = headers.authorization.split(" ")[1];
+
+        return {
+            message: "update token successfully",
+            node: await this.authenticateService.refreshToken(params, accessToken),
+        };
+    }
+
+    @Mutation(() => LogoutResponseBlock)
+    @UseGuards(JwtAuthGuard)
+    async logout(@Args("params") params: LogoutInput, @Context("req") req: any) {
+        const user = req.user;
+
+        if (await this.authenticateService.logout(params, user.session.id)) {
+            return {
+                message: "logout successfully",
+            };
+        } else {
+            throw new GraphQLError("logout failed");
+        }
     }
 }
