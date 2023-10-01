@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import { Product } from "./entities/product.entity";
 import { ProductService } from "./product.service";
@@ -7,10 +7,20 @@ import { FileUpload } from "../blog/entities/file.entity";
 import { Role } from "../../utils/types/role.enum";
 import { UpdateProductInput } from "./dto/update-product.input";
 import { Roles } from "../../decorators/roles/roles.decorator";
+import { UseGuards } from "@nestjs/common";
+import { FilterProductInput } from "./dto/filter.input";
+import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 
 @Resolver()
 export class ProductResolver {
     constructor(private readonly productService: ProductService) {}
+
+    @Query(() => [Product])
+    @UseGuards(JwtAuthGuard)
+    async all_products(@Args('filter') filter: FilterProductInput) {
+        const products = await this.productService.queryAllProduct(filter);
+        return products || [];
+    }
 
     @Mutation(() => Product)
     @Roles(Role.Admin)

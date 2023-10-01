@@ -7,6 +7,7 @@ import { CreateBlogInput } from "./dto/create-blog.input";
 import { FilterBlogInput } from "./dto/query-blog.input";
 import { UpdateBlogInput } from "./dto/update-blog.input";
 import { removeVietnameseTones } from "../../utils/util/search";
+import { GraphQLError } from "graphql";
 
 @Injectable()
 export class BlogService {
@@ -14,7 +15,7 @@ export class BlogService {
 
     async findBlogById(blog_id: number) {
         try {
-            const blog = await this.prisma.blog.findUnique({ where: { blog_id } });
+            const blog = this.prisma.blog.findUnique({ where: { blog_id } });
             if (!blog) throw new Error("Cannot found the resources");
             return blog;
         } catch (err) {
@@ -25,15 +26,14 @@ export class BlogService {
     async queryAllBlogs(filter: FilterBlogInput) {
         try {
             const blogs = await this.prisma.blog.findMany({
-                skip: filter.page,
-                take: filter.perPage,
+                skip: filter?.page || 0,
+                take: filter?.perPage || 100,
                 where: {
                   title: {
-                    contains: removeVietnameseTones(filter?.search) || ''
+                    contains: removeVietnameseTones(filter?.search || "") || ''
                   }
                 },
             });
-            console.log('***', blogs)
             if (blogs) return blogs;
         } catch (err) {
             throw new Error(err);
@@ -127,6 +127,16 @@ export class BlogService {
             return blog;
         } catch (err) {
             throw new Error(err);
+        }
+    }
+
+    async deleteBlog(blog_id: number) {
+        try {
+            const deletedBlog = await this.prisma.blog.delete({ where: { blog_id }})
+            if (deletedBlog) return true;
+            return false;
+        } catch (error) {
+            throw new GraphQLError(error);
         }
     }
 }

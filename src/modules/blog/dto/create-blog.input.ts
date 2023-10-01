@@ -1,4 +1,5 @@
 import { InputType, Field, Int } from "@nestjs/graphql";
+import { IsString } from "class-validator";
 // import * as Prisma from '@prisma/client'
 
 @InputType()
@@ -6,6 +7,7 @@ export class CreateBlogInput {
     @Field(() => Int, { nullable: true })
     blog_id: number;
 
+    @IsString()
     @Field(() => String, { nullable: false })
     title: string;
 
