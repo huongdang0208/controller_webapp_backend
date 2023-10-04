@@ -11,6 +11,8 @@ import { AuthenticateModule } from "./modules/authenticate/authenticate.module";
 import { BlogModule } from "./modules/blog/blog.module";
 import { ProductModule } from "./modules/product/product.module";
 import { appConfig } from "./config";
+import { MailModule } from "./modules/mail/mail.module";
+import { OrderModule } from "./modules/order/order.module";
 
 @Module({
     imports: [
@@ -32,6 +34,8 @@ import { appConfig } from "./config";
         AuthenticateModule,
         BlogModule,
         ProductModule,
+        MailModule,
+        OrderModule,
     ],
     controllers: [],
     providers: [AppResolver],

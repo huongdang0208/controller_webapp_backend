@@ -44,7 +44,7 @@ export class BlogService {
         try {
             if (image) {
                 const { createReadStream, filename, mimetype } = await image;
-                const path = `./images/${filename}`;
+                const path = `./images/blog/${filename}`;
 
                 await createReadStream().pipe(createWriteStream(path));
 

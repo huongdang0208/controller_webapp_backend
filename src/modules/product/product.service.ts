@@ -35,7 +35,7 @@ export class ProductService {
         try {
             if (image) {
                 const { createReadStream, filename, mimetype } = await image;
-                const path = `./images/${filename}`;
+                const path = `./images/category/${filename}`;
 
                 await createReadStream().pipe(createWriteStream(path));
 

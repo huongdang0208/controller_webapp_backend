@@ -10,7 +10,8 @@
         "typeCheck": true,
         "deleteOutDir": true,
         "assets": [
-            "**/*.proto"
+            "**/*.proto",
+            "**/*.hbs"
         ],
         "watchAssets": true
     }

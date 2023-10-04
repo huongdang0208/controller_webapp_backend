@@ -38,8 +38,8 @@ model Session {
 // onDelete: Cascad mean when parent model of this model is deleted, in case when User model is deleted, the Bookmark is delete
 
 model Order {
-    orderId          String @id
-    categoryId       String
+    orderId          Int      @id @default(autoincrement())
+    categoryId       Int
     receiverLocation String
     quantity         Int
     totalPrice       Int
