@@ -4,6 +4,9 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { PassportModule } from "@nestjs/passport";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+
 import { AppResolver } from "./app.resolver";
 import { PrismaModule } from "./modules/prisma/prisma.module";
 import { UserModule } from "./modules/user/user.module";
@@ -27,6 +30,29 @@ import { OrderModule } from "./modules/order/order.module";
             sortSchema: true,
             introspection: true,
             plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        }),
+        MailerModule.forRootAsync({
+            useFactory: () => ({
+                transport: {
+                    host: "smtp.yandex.com",
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: "no-reply@danghoangphuc.com",
+                        pass: "cuteRabbit@artart123",
+                    },
+                },
+                defaults: {
+                    from: '"No Reply" <no-reply@danghoangphuc.com>',
+                },
+                template: {
+                    dir: process.cwd() + "/templates/",
+                    adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+                    options: {
+                        strict: true,
+                    },
+                },
+            }),
         }),
         PassportModule.register({ session: true }),
         PrismaModule,

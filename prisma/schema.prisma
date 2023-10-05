@@ -40,7 +40,9 @@ model Session {
 model Order {
     orderId          Int      @id @default(autoincrement())
     categoryId       Int
+    categoryName     String
     receiverLocation String
+    receiverPhone    String
     quantity         Int
     totalPrice       Int
     orderStatus      String

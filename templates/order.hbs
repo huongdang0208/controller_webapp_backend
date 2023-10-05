@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="title">
+      <h2>Product Order Form</h2>
+  </div>
+<div class="d-flex">
+  <form action="" method="">
+    <label>
+      <span class="fname">Name<span class="required">*</span></span>
+      <p>{{user.username}}</p>
+    </label>
+    <label>
+      <span>Receiver location</span>
+      <p>{{order.receiverLocation}}</p>
+    </label>
+    <label>
+      <span>Phone<span class="required">*</span></span>
+      <p>{{order.receiverPhone}}</p>
+    </label>
+    <label>
+      <span>Email Address <span class="required">*</span></span>
+      <p>{{user.email}}</p>
+    </label>
+  </form>
+  <div class="Yorder">
+    <table>
+      <tr>
+        <th colspan="2">Order</th>
+      </tr>
+      <tr>
+        <td>{{order.categoryName}}</td>
+        <td>{{order.totalPrice}}</td>
+      </tr>
+      <tr>
+        <td>Discount</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Shipping</td>
+        <td>Free shipping</td>
+      </tr>
+    </table><br>
+  </div><!-- Yorder -->
+ </div>
+</div>

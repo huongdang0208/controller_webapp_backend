@@ -10,6 +10,7 @@ import { Roles } from "../../decorators/roles/roles.decorator";
 import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
+import { RolesGuard } from "../../guards/roles/roles.guard";
 
 @Resolver()
 export class ProductResolver {
@@ -24,6 +25,7 @@ export class ProductResolver {
 
     @Mutation(() => Product)
     @Roles(Role.Admin)
+    @UseGuards(RolesGuard)
     async create_product(
         @Args("input") input: CreateProductInput,
         @Args({
@@ -39,6 +41,7 @@ export class ProductResolver {
 
     @Mutation(() => Product)
     @Roles(Role.Admin)
+    @UseGuards(RolesGuard)
     async update_product(
         @Args("input") input: UpdateProductInput,
         @Args({

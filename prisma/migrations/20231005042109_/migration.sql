@@ -25,9 +25,10 @@ CREATE TABLE "Session" (
 
 -- CreateTable
 CREATE TABLE "Order" (
-    "orderId" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
+    "orderId" SERIAL NOT NULL,
+    "categoryId" INTEGER NOT NULL,
     "receiverLocation" TEXT NOT NULL,
+    "receiverPhone" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "totalPrice" INTEGER NOT NULL,
     "orderStatus" TEXT NOT NULL,

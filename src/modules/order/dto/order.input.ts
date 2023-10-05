@@ -7,7 +7,13 @@ export class OrderInput {
     categoryId: number;
 
     @Field(() => String, { nullable: false })
+    categoryName: string;
+
+    @Field(() => String, { nullable: false })
     receiverLocation: string;
+
+    @Field(() => String, { nullable: false })
+    receiverPhone: string;
 
     @Field(() => Int, { nullable: false })
     quantity: number;
