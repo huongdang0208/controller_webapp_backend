@@ -16,6 +16,7 @@ import { ProductModule } from "./modules/product/product.module";
 import { appConfig } from "./config";
 import { MailModule } from "./modules/mail/mail.module";
 import { OrderModule } from "./modules/order/order.module";
+import { ContactModule } from './modules/contact/contact.module';
 
 @Module({
     imports: [
@@ -62,6 +63,7 @@ import { OrderModule } from "./modules/order/order.module";
         ProductModule,
         MailModule,
         OrderModule,
+        ContactModule,
     ],
     controllers: [],
     providers: [AppResolver],
