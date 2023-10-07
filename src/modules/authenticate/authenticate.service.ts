@@ -109,16 +109,20 @@ export class AuthenticateService {
 
     async login(loginAuthenticateInput: LoginInput) {
         try {
-            const user = await this.prisma.user.findUniqueOrThrow({
+            const user = await this.prisma.user.findFirst({
                 where: {
-                    email: loginAuthenticateInput.email,
+                    username: loginAuthenticateInput.username,
                 },
             });
+
+            if (!user) {
+                throw new GraphQLError("Thông tin đăng nhập không hợp lệ");
+            }
 
             const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
 
             if (!result) {
-                throw new GraphQLError("Credentials incorrect");
+                throw new GraphQLError("Thông tin đăng nhập không hợp lệ");
             }
 
             const { accessToken, refreshToken } = await this.signTokens(user.id, user.email);
