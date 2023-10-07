@@ -1,5 +1,6 @@
 import { ObjectType, Field } from "@nestjs/graphql";
 import { IsEmail, IsString } from "class-validator";
+import { Role } from "src/utils/types/role.enum";
 
 @ObjectType()
 export class User {
@@ -21,8 +22,8 @@ export class User {
     // @Field(() => Number, { nullable: true })
     // order_id: number;
 
-    @Field({ nullable: true })
-    role: string;
+    @Field({ nullable: false })
+    role: Role;
 
     @Field({ nullable: true })
     created_at: Date;
