@@ -9,7 +9,7 @@ export class UserService {
     constructor(
         private prisma: PrismaService,
         private config: ConfigService,
-    ) {}
+    ) { }
 
     async findOne(id: number) {
         try {
@@ -25,7 +25,7 @@ export class UserService {
         }
     }
 
-    async getByEmail(email: string): Promise<User> {
+    async getByEmail(email: string) {
         try {
             const user = this.prisma.user.findUnique({ where: { email } });
 

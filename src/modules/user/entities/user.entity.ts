@@ -1,6 +1,6 @@
+import { Role } from '../../../utils/types/role.enum';
 import { ObjectType, Field } from "@nestjs/graphql";
 import { IsEmail, IsString } from "class-validator";
-import { Role } from "src/utils/types/role.enum";
 
 @ObjectType()
 export class User {

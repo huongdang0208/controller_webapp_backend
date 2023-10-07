@@ -18,7 +18,7 @@ export class AuthenticateResolver {
     async register(
         @Args("params")
         registerAuthenticateInput: RegisterAuthenticateInput,
-    ): Promise<RegisterResponseBlock> {
+    ) {
         const user = await this.authenticateService.register(registerAuthenticateInput);
 
         return {
