@@ -31,7 +31,8 @@ async function bootstrap() {
             },
         }),
     );
-
+    
+    app.enableCors();
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(graphqlUploadExpress());
