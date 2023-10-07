@@ -18,7 +18,7 @@ export class ProductResolver {
 
     @Query(() => [Product])
     @UseGuards(JwtAuthGuard)
-    async all_products(@Args('filter') filter: FilterProductInput) {
+    async products(@Args('filter') filter: FilterProductInput) {
         const products = await this.productService.queryAllProduct(filter);
         return products || [];
     }

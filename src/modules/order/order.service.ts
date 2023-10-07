@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { OrderInput } from "./dto/order.input";
 import { GraphQLError } from "graphql";
 import { MailService } from "../mail/mail.service";
+import { Order } from "./entities/order.entity";
 
 @Injectable()
 export class OrderService {
@@ -22,7 +23,7 @@ export class OrderService {
             const user = await this.prisma.user.findUnique({ where: { id: input.ownerId } });
 
             if (order) {
-                this.mailService.sendUserOrder(user, order);
+                this.mailService.sendUserOrder(user, order as Order);
                 return order;
             }
         } catch (err) {

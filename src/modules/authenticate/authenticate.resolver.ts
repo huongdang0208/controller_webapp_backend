@@ -41,7 +41,7 @@ export class AuthenticateResolver {
         };
     }
 
-    @Mutation(() => LoginResponseBlock)
+    @Mutation(() => LoginResponseBlock, { name: "refresh_token" })
     async refreshToken(@Args("params") params: RefreshTokenInput, @Context("req") req: Request) {
         const headers = req.headers;
 
