@@ -3,12 +3,13 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import { User } from "../../user/entities/user.entity";
 import { AuthenticateService } from "../authenticate.service";
+import { GraphQLError } from "graphql";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
     constructor(private authService: AuthenticateService) {
         super({
-            usernameField: "email",
+            usernameField: "username",
         });
     }
 
@@ -16,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         const user = await this.authService.validateUser(email, password);
 
         if (!user) {
-            throw new BadRequestException("Credentials incorrect");
+            throw new GraphQLError("Credentials incorrect");
         }
 
         return user;

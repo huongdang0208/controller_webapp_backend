@@ -17,7 +17,7 @@ export class AuthenticateService {
         private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
         private readonly config: ConfigService,
-    ) {}
+    ) { }
 
     private async signTokens(userId: number, email: string) {
         const [accessToken, refreshToken] = await Promise.all([
@@ -48,9 +48,10 @@ export class AuthenticateService {
         };
     }
 
-    async validateUser(email: string, password: string) {
+    async validateUser(username: string, password: string) {
         try {
-            const user = await this.prisma.user.findUnique({ where: { email } });
+            const user = await this.prisma.user.findFirst({ where: { username } });
+
             if (user) {
                 const result = await bcrypt.compare(password, user.password);
                 if (result) {
@@ -109,6 +110,8 @@ export class AuthenticateService {
 
     async login(loginAuthenticateInput: LoginInput) {
         try {
+            console.log(loginAuthenticateInput);
+
             const user = await this.prisma.user.findFirst({
                 where: {
                     username: loginAuthenticateInput.username,
