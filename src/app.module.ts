@@ -53,15 +53,6 @@ import { JwtAuthGuard } from "./guards/auth/auth.guard";
         FileModule,
     ],
     controllers: [AppController],
-    providers: [
-        {
-            provide: APP_GUARD,
-            useClass: JwtAuthGuard,
-        },
-        {
-            provide: APP_GUARD,
-            useClass: RolesGuard,
-        },
-    ],
+    providers: [],
 })
 export class AppModule {}
