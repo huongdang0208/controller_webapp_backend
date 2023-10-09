@@ -20,7 +20,8 @@
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "dotenv -e .env2 jest -no--cache --watch --config ./test/jest-e2e.json",
         "prisma:generate": "npx prisma generate",
-        "prisma:migrate": "npx prisma migrate dev --name init"
+        "prisma:migrate": "npx prisma migrate dev --name init",
+        "postinstall": "npm run prisma:generate"
     },
     "dependencies": {
         "@apollo/server": "^4.9.3",

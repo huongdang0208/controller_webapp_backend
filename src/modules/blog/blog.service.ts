@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { FileUpload } from "../../utils/types/data.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateBlogInput } from "./dto/create-blog.input";
 import { FilterBlogInput } from "./dto/query-blog.input";
