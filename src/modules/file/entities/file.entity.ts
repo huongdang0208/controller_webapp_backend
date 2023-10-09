@@ -1,8 +1,8 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType()
 export class FileUpload {
-    @Field(() => Int)
+    @Field(() => Number)
     file_id: number;
 
     @Field(() => String, { nullable: false })
@@ -11,8 +11,14 @@ export class FileUpload {
     @Field(() => String, { nullable: false })
     mimetype: string;
 
-    @Field(() => Int)
+    @Field(() => Number)
     size: number;
+
+    @Field(() => String)
+    path: string;
+
+    @Field(() => String)
+    cdn_path: string;
 
     @Field({ nullable: true })
     created_at: Date;

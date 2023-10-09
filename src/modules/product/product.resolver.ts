@@ -3,7 +3,6 @@ import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import { Product } from "./entities/product.entity";
 import { ProductService } from "./product.service";
 import { CreateProductInput } from "./dto/create-product.input";
-import { FileUpload } from "../blog/entities/file.entity";
 import { Role } from "../../utils/types/role.enum";
 import { UpdateProductInput } from "./dto/update-product.input";
 import { Roles } from "../../decorators/roles/roles.decorator";
@@ -11,6 +10,7 @@ import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { RolesGuard } from "../../guards/roles/roles.guard";
+import { FileUpload } from "../file/entities/file.entity";
 
 @Resolver()
 export class ProductResolver {

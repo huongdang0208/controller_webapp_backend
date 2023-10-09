@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int } from "@nestjs/graphql";
+import { FileUpload } from "../../file/entities/file.entity";
 
 @ObjectType()
 export class Blog {
@@ -11,8 +12,8 @@ export class Blog {
     @Field(() => String, { nullable: false })
     description: string;
 
-    @Field(() => String, { nullable: true })
-    images: string;
+    @Field(() => FileUpload, { nullable: true })
+    images: FileUpload;
 
     @Field({ nullable: true })
     created_at: Date;

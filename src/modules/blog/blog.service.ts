@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { createWriteStream } from "fs";
-
 import { FileUpload } from "../../utils/types/data.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateBlogInput } from "./dto/create-blog.input";
@@ -8,6 +6,7 @@ import { FilterBlogInput } from "./dto/query-blog.input";
 import { UpdateBlogInput } from "./dto/update-blog.input";
 import { removeVietnameseTones } from "../../utils/util/search";
 import { GraphQLError } from "graphql";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class BlogService {
@@ -15,116 +14,97 @@ export class BlogService {
 
     async findBlogById(blog_id: number) {
         try {
-            const blog = this.prisma.blog.findUnique({ where: { blog_id } });
-            if (!blog) throw new Error("Cannot found the resources");
+            const blog = this.prisma.blog.findUnique({
+                where: {
+                    blog_id,
+                },
+                include: {
+                    images: true,
+                },
+            });
+
+            if (!blog) {
+                throw new GraphQLError("Blog not found");
+            }
+
             return blog;
         } catch (err) {
             throw new Error(err);
         }
     }
 
-    async queryAllBlogs(filter: FilterBlogInput) {
+    async queryAllBlogs({ page, perPage, order, search }: FilterBlogInput) {
+        const skip = (page - 1) * perPage;
+
         try {
-            const blogs = await this.prisma.blog.findMany({
-                skip: filter?.page || 0,
-                take: filter?.perPage || 100,
-                where: {
-                  title: {
-                    contains: removeVietnameseTones(filter?.search || "") || ''
-                  }
+            let config: Prisma.BlogFindManyArgs = {
+                skip: skip || 0,
+                take: perPage || 10,
+                include: {
+                    images: true,
                 },
-            });
-            if (blogs) return blogs;
+            };
+
+            if (search) {
+                config = {
+                    ...config,
+                    where: {
+                        title: {
+                            contains: removeVietnameseTones(search) || "",
+                        },
+                    },
+                };
+            }
+
+            if (order) {
+                config = {
+                    ...config,
+                    orderBy: {
+                        title: order,
+                    },
+                };
+            }
+
+            const blogs = await this.prisma.blog.findMany(config);
+
+            return blogs || [];
         } catch (err) {
             throw new Error(err);
         }
     }
 
-    async createBlog(input: CreateBlogInput, image: FileUpload) {
+    async createBlog(input: CreateBlogInput) {
         try {
-            if (image) {
-                const { createReadStream, filename, mimetype } = await image;
-                const path = `./images/blog/${filename}`;
-
-                await createReadStream().pipe(createWriteStream(path));
-
-                const blog = this.prisma.blog.create({
-                    data: {
-                        title: input.title,
-                        description: input.description,
-                        images: path,
-                    },
-                });
-                await this.prisma.file.create({
-                    data: {
-                        filename: filename,
-                        mimetype: mimetype,
-                        size: 12,
-                        path: path,
-                        blogId: (await blog).blog_id,
-                        categoryId: null
-                    },
-                });
-
-
-                if (blog) return blog;
-            } else {
-                const blog = this.prisma.blog.create({
-                    data: {
-                        title: input.title,
-                        description: input.description,
-                        images: "",
-                    },
-                });
-
-                return blog;
-            }
-        } catch (err) {
-            console.log("***", err);
-            throw new Error(err);
-        }
-    }
-
-    async updateBlog(input: UpdateBlogInput, image: FileUpload) {
-        try {
-            if (!input.blog_id) {
-                throw new Error("Field blog_id is required but got null");
-            }
-            if (image) {
-                const { createReadStream, filename, mimetype } = await image;
-                const path = `./images/blog/${filename}`;
-
-                await createReadStream().pipe(createWriteStream(path));
-
-                const blog = await this.prisma.blog.update({
-                    where: { blog_id: input.blog_id },
-                    data: {
-                        ...input
-                    },
-                });
-
-                await this.prisma.file.create({
-                    data: {
-                        filename: filename,
-                        mimetype: mimetype,
-                        size: 12,
-                        path,
-                        blogId: (await blog).blog_id,
-                        categoryId: null
-                    },
-                });
-
-                return blog;
-            }
-            const blog = await this.prisma.blog.update({
-                where: { blog_id: input.blog_id },
+            return this.prisma.blog.create({
                 data: {
                     title: input.title,
                     description: input.description,
-                    updatedAt: Date(),
+                    images_id: input.images,
+                },
+                include: {
+                    images: true,
                 },
             });
-            return blog;
+        } catch (err) {
+            throw new GraphQLError(err);
+        }
+    }
+
+    async updateBlog(blogId: number, input: UpdateBlogInput) {
+        try {
+            return this.prisma.blog.update({
+                where: {
+                    blog_id: blogId,
+                },
+                data: {
+                    title: input.title,
+                    description: input.description,
+                    images_id: input.images,
+                },
+                include: {
+                    images: true,
+                },
+            });
         } catch (err) {
             throw new Error(err);
         }
@@ -132,9 +112,9 @@ export class BlogService {
 
     async deleteBlog(blog_id: number) {
         try {
-            const deletedBlog = await this.prisma.blog.delete({ where: { blog_id }})
-            if (deletedBlog) return true;
-            return false;
+            const deletedBlog = await this.prisma.blog.delete({ where: { blog_id } });
+
+            return !!deletedBlog;
         } catch (error) {
             throw new GraphQLError(error);
         }

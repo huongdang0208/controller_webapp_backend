@@ -1,25 +1,5 @@
-import { InputType, Field, Int } from "@nestjs/graphql";
-import { IsString } from "class-validator";
-// import * as Prisma from '@prisma/client'
+import { InputType, PartialType } from "@nestjs/graphql";
+import { CreateBlogInput } from "./create-blog.input";
 
 @InputType()
-export class UpdateBlogInput {
-    @Field(() => Int, { nullable: false })
-    blog_id: number;
-
-    @IsString()
-    @Field(() => String, { nullable: true })
-    title: string;
-
-    @Field(() => String, { nullable: true })
-    description: string;
-
-    // @Field()
-    // category: Prisma.Blog
-
-    @Field({ nullable: true })
-    created_at: Date;
-
-    @Field({ nullable: true })
-    updated_at: Date;
-}
+export class UpdateBlogInput extends PartialType<CreateBlogInput>(CreateBlogInput) {}

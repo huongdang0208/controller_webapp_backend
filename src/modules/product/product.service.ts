@@ -56,17 +56,6 @@ export class ProductService {
                     },
                 });
 
-                this.prisma.file.create({
-                    data: {
-                        filename: filename,
-                        mimetype: mimetype,
-                        path: path,
-                        size: 12,
-                        blogId: null,
-                        categoryId: (await product).category_id,
-                    },
-                });
-
                 return product;
             } else {
                 const product = this.prisma.category.create({
@@ -118,16 +107,6 @@ export class ProductService {
                                 power: input?.data?.power,
                             },
                         },
-                    },
-                });
-                await this.prisma.file.create({
-                    data: {
-                        filename: filename,
-                        mimetype,
-                        size: 12,
-                        path,
-                        blogId: null,
-                        categoryId: (await product).category_id,
                     },
                 });
 

@@ -4,7 +4,6 @@ import session from "express-session";
 import passport from "passport";
 import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./app.module";
-import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js'
 
 process.env.TZ = "Asia/Ho_Chi_Minh";
 
@@ -31,11 +30,10 @@ async function bootstrap() {
             },
         }),
     );
-    
+
     app.enableCors();
     app.use(passport.initialize());
     app.use(passport.session());
-    app.use(graphqlUploadExpress());
 
     await app.listen(8080, "0.0.0.0");
 

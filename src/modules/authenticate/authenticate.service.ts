@@ -110,8 +110,6 @@ export class AuthenticateService {
 
     async login(loginAuthenticateInput: LoginInput) {
         try {
-            console.log(loginAuthenticateInput);
-
             const user = await this.prisma.user.findFirst({
                 where: {
                     username: loginAuthenticateInput.username,

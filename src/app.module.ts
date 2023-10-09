@@ -12,6 +12,13 @@ import { ProductModule } from "./modules/product/product.module";
 import { appConfig, mailConfig } from "./config";
 import { MailModule } from "./modules/mail/mail.module";
 import { OrderModule } from "./modules/order/order.module";
+import { FileModule } from "./modules/file/file.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
+import { AppController } from "./app.controller";
+import { APP_GUARD } from "@nestjs/core";
+import { RolesGuard } from "./guards/roles/roles.guard";
+import { JwtAuthGuard } from "./guards/auth/auth.guard";
 
 @Module({
     imports: [
@@ -27,6 +34,14 @@ import { OrderModule } from "./modules/order/order.module";
             introspection: true,
             plugins: [ApolloServerPluginLandingPageLocalDefault()],
         }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, "..", "public/uploads"),
+            serveRoot: "/public/uploads",
+            serveStaticOptions: {
+                index: false,
+                dotfiles: "ignore",
+            },
+        }),
         PassportModule.register({ session: true }),
         PrismaModule,
         UserModule,
@@ -35,8 +50,18 @@ import { OrderModule } from "./modules/order/order.module";
         ProductModule,
         MailModule,
         OrderModule,
+        FileModule,
     ],
-    controllers: [],
-    providers: [],
+    controllers: [AppController],
+    providers: [
+        {
+            provide: APP_GUARD,
+            useClass: JwtAuthGuard,
+        },
+        {
+            provide: APP_GUARD,
+            useClass: RolesGuard,
+        },
+    ],
 })
 export class AppModule {}
