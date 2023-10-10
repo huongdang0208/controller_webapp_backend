@@ -11,7 +11,7 @@ export interface FileUpload {
   createReadStream?: () => Stream;
 }
 
-export interface DataCategory extends prisma.Data {
+export interface Dataproduct extends prisma.Data {
   data_id: number;
   size: number;
   weight: number;

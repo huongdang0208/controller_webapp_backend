@@ -27,8 +27,8 @@ CREATE TABLE `Session` (
 -- CreateTable
 CREATE TABLE `Order` (
     `orderId` INTEGER NOT NULL AUTO_INCREMENT,
-    `categoryId` INTEGER NOT NULL,
-    `categoryName` VARCHAR(191) NOT NULL,
+    `productId` INTEGER NOT NULL,
+    `productName` VARCHAR(191) NOT NULL,
     `receiverLocation` VARCHAR(191) NOT NULL,
     `receiverPhone` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
@@ -54,25 +54,25 @@ CREATE TABLE `Blog` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Category` (
-    `category_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `category_name` VARCHAR(191) NOT NULL,
+CREATE TABLE `Product` (
+    `product_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `product_name` VARCHAR(191) NOT NULL,
     `detail_description` VARCHAR(191) NOT NULL,
     `instruction` VARCHAR(191) NOT NULL,
     `images` VARCHAR(191) NOT NULL,
-    `category_status` VARCHAR(191) NOT NULL,
+    `product_status` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
-    PRIMARY KEY (`category_id`)
+    PRIMARY KEY (`product_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `CategoriesOnPosts` (
     `blogId` INTEGER NOT NULL,
-    `categoryId` INTEGER NOT NULL,
+    `productId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`blogId`, `categoryId`)
+    PRIMARY KEY (`blogId`, `productId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -81,9 +81,9 @@ CREATE TABLE `Data` (
     `size` INTEGER NULL,
     `weight` INTEGER NULL,
     `power` INTEGER NULL,
-    `category_id` INTEGER NOT NULL,
+    `product_id` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Data_category_id_key`(`category_id`),
+    UNIQUE INDEX `Data_product_id_key`(`product_id`),
     PRIMARY KEY (`data_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -94,6 +94,7 @@ CREATE TABLE `File` (
     `size` INTEGER NOT NULL,
     `mimetype` VARCHAR(191) NOT NULL,
     `path` VARCHAR(191) NOT NULL,
+    `cdn_path` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -113,7 +114,7 @@ ALTER TABLE `Blog` ADD CONSTRAINT `Blog_images_id_fkey` FOREIGN KEY (`images_id`
 ALTER TABLE `CategoriesOnPosts` ADD CONSTRAINT `CategoriesOnPosts_blogId_fkey` FOREIGN KEY (`blogId`) REFERENCES `Blog`(`blog_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `CategoriesOnPosts` ADD CONSTRAINT `CategoriesOnPosts_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`category_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `CategoriesOnPosts` ADD CONSTRAINT `CategoriesOnPosts_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Data` ADD CONSTRAINT `Data_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `Category`(`category_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Data` ADD CONSTRAINT `Data_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `Product`(`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE;

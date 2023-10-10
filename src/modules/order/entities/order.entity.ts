@@ -6,10 +6,10 @@ export class Order {
     orderId: number;
 
     @Field(() => Int, { nullable: false })
-    categoryId: number;
+    productId: number;
 
     @Field(() => String, { nullable: false })
-    categoryName: string;
+    productName: string;
 
     @Field(() => String, { nullable: false })
     receiverLocation: string;

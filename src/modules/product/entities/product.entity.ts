@@ -4,10 +4,10 @@ import { Data } from "./data.entity";
 @ObjectType()
 export class Product {
     @Field(() => Int)
-    category_id: number;
+    product_id: number;
 
     @Field(() => String, { nullable: false })
-    category_name: string;
+    product_name: string;
 
     @Field(() => Data, { nullable: true })
     data: Data;
@@ -22,7 +22,7 @@ export class Product {
     images: string;
 
     @Field(() => String, { nullable: true })
-    category_status: string;
+    product_status: string;
 
     @Field(() => Date, { nullable: true })
     created_at: Date;

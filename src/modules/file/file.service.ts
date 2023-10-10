@@ -8,6 +8,7 @@ export class FileService {
 
     async saveFile(file: Express.Multer.File) {
         const { filename, path, size, mimetype } = file;
+        console.log(path)
 
         // replace \\ -> /
         const newPath = path.replace(/\\/g, "/");

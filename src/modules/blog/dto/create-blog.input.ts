@@ -16,5 +16,5 @@ export class CreateBlogInput {
     images: number;
 
     // @Field()
-    // category: Prisma.Blog
+    // product: Prisma.Blog
 }

@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
-import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
+// import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import { Product } from "./entities/product.entity";
 import { ProductService } from "./product.service";
 import { CreateProductInput } from "./dto/create-product.input";
@@ -10,7 +10,7 @@ import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { RolesGuard } from "../../guards/roles/roles.guard";
-import { FileUpload } from "../file/entities/file.entity";
+// import { FileUpload } from "../file/entities/file.entity";
 
 @Resolver()
 export class ProductResolver {
@@ -18,7 +18,7 @@ export class ProductResolver {
 
     @Query(() => [Product])
     @UseGuards(JwtAuthGuard)
-    async products(@Args('filter') filter: FilterProductInput) {
+    async products(@Args("filter") filter: FilterProductInput) {
         const products = await this.productService.queryAllProduct(filter);
         return products || [];
     }
@@ -26,32 +26,14 @@ export class ProductResolver {
     @Mutation(() => Product)
     // @Roles(Role.Admin)
     @UseGuards(RolesGuard)
-    async create_product(
-        @Args("input") input: CreateProductInput,
-        @Args({
-            name: "image",
-            type: () => GraphQLUpload,
-            nullable: true,
-            defaultValue: null,
-        })
-        image: FileUpload | null,
-    ) {
-        return this.productService.createProduct(input, image);
+    async create_product(@Args("input") input: CreateProductInput) {
+        return this.productService.createProduct(input);
     }
 
     @Mutation(() => Product)
     // @Roles(Role.Admin)
     @UseGuards(RolesGuard)
-    async update_product(
-        @Args("input") input: UpdateProductInput,
-        @Args({
-            name: "image",
-            type: () => GraphQLUpload,
-            nullable: true,
-            defaultValue: null,
-        })
-        image: FileUpload | null,
-    ) {
-        return this.productService.updateProduct(input, image);
+    async update_product(@Args("input") input: UpdateProductInput) {
+        return this.productService.updateProduct(input);
     }
 }

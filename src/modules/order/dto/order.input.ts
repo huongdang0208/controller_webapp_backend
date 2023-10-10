@@ -4,10 +4,10 @@ import { Field, InputType, Int } from "@nestjs/graphql";
 export class OrderInput {
 
     @Field(() => Int, { nullable: false })
-    categoryId: number;
+    productId: number;
 
     @Field(() => String, { nullable: false })
-    categoryName: string;
+    productName: string;
 
     @Field(() => String, { nullable: false })
     receiverLocation: string;
