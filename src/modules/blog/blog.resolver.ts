@@ -8,12 +8,13 @@ import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { Role } from "../../utils/types/role.enum";
 import { Roles } from "../../decorators/roles/roles.decorator";
+import { BlogsResponse } from "./dto/query-blog.response";
 
 @Resolver(() => Blog)
 export class BlogResolver {
     constructor(private readonly blogService: BlogService) {}
 
-    @Query(() => [Blog])
+    @Query(() => BlogsResponse)
     async blogs(@Args("filter", { nullable: true }) filter?: FilterBlogInput) {
         return this.blogService.queryAllBlogs(filter);
     }

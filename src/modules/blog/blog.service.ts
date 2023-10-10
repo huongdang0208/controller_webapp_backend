@@ -6,6 +6,7 @@ import { UpdateBlogInput } from "./dto/update-blog.input";
 import { removeVietnameseTones } from "../../utils/util/search";
 import { GraphQLError } from "graphql";
 import { Prisma } from "@prisma/client";
+import { BlogsResponse } from "./dto/query-blog.response";
 
 @Injectable()
 export class BlogService {
@@ -32,7 +33,7 @@ export class BlogService {
         }
     }
 
-    async queryAllBlogs({ page, perPage, order, search }: FilterBlogInput) {
+    async queryAllBlogs({ page = 1, perPage = 10, order, search }: FilterBlogInput) {
         const skip = (page - 1) * perPage;
 
         try {
@@ -66,7 +67,18 @@ export class BlogService {
 
             const blogs = await this.prisma.blog.findMany(config);
 
-            return blogs || [];
+            // Paginate info
+            const totalBlog = await this.prisma.blog.count();
+            const totalPage = Math.ceil(totalBlog / perPage);
+
+            return {
+                blogs,
+                paginateInfo: {
+                    totalCount: totalBlog,
+                    currentPage: page,
+                    totalPage,
+                },
+            };
         } catch (err) {
             throw new Error(err);
         }
