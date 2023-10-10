@@ -1,15 +1,16 @@
 import { InputType, Field, ObjectType } from "@nestjs/graphql";
-import { IsEmail, IsString } from "class-validator";
+import { IsString } from "class-validator";
 import { User } from "../../user/entities/user.entity";
 import { BaseOneAbstractResult } from "../../base/dto/base-one.abstract-result";
 
 @InputType()
 export class LoginInput {
     @Field(() => String, { nullable: false })
-    @IsEmail()
-    email: string;
+    @IsString()
+    username: string;
 
     @Field(() => String, { nullable: false })
+    @IsString()
     password: string;
 }
 
@@ -28,4 +29,4 @@ export class LoginResponse {
 }
 
 @ObjectType()
-export class LoginResponseBlock extends BaseOneAbstractResult<LoginResponse>(LoginResponse) {}
+export class LoginResponseBlock extends BaseOneAbstractResult<LoginResponse>(LoginResponse) { }

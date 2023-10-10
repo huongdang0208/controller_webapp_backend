@@ -30,8 +30,8 @@ export class Order {
     ownerId: number;
 
     @Field({ nullable: true })
-    createdAt: Date;
+    created_at: Date;
 
     @Field({ nullable: true })
-    updatedAt: Date;
+    updated_at: Date;
 }

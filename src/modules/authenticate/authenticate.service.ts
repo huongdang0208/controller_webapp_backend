@@ -17,7 +17,7 @@ export class AuthenticateService {
         private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
         private readonly config: ConfigService,
-    ) {}
+    ) { }
 
     private async signTokens(userId: number, email: string) {
         const [accessToken, refreshToken] = await Promise.all([
@@ -48,9 +48,10 @@ export class AuthenticateService {
         };
     }
 
-    async validateUser(email: string, password: string) {
+    async validateUser(username: string, password: string) {
         try {
-            const user = await this.prisma.user.findUnique({ where: { email } });
+            const user = await this.prisma.user.findFirst({ where: { username } });
+
             if (user) {
                 const result = await bcrypt.compare(password, user.password);
                 if (result) {
@@ -109,16 +110,20 @@ export class AuthenticateService {
 
     async login(loginAuthenticateInput: LoginInput) {
         try {
-            const user = await this.prisma.user.findUniqueOrThrow({
+            const user = await this.prisma.user.findFirst({
                 where: {
-                    email: loginAuthenticateInput.email,
+                    username: loginAuthenticateInput.username,
                 },
             });
+
+            if (!user) {
+                throw new GraphQLError("Thông tin đăng nhập không hợp lệ");
+            }
 
             const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
 
             if (!result) {
-                throw new GraphQLError("Credentials incorrect");
+                throw new GraphQLError("Thông tin đăng nhập không hợp lệ");
             }
 
             const { accessToken, refreshToken } = await this.signTokens(user.id, user.email);
