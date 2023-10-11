@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 // import { createWriteStream } from "fs";
-
 // import { FileUpload } from "../../utils/types/data.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductInput } from "./dto/create-product.input";
@@ -33,7 +32,7 @@ export class ProductService {
 
     async createProduct(input: CreateProductInput) {
         try {
-            const product = this.prisma.product.create({
+            return this.prisma.product.create({
                 data: {
                     product_name: input.product_name,
                     detail_description: input.detail_description,
@@ -52,19 +51,15 @@ export class ProductService {
                     images: true,
                 },
             });
-            return product;
         } catch (err) {
             throw new Error(err);
         }
     }
 
-    async updateProduct(input: UpdateProductInput) {
+    async updateProduct(product_id: number, input: UpdateProductInput) {
         try {
-            if (!input.product_id) {
-                throw new Error("Field product_id is required, but not provided");
-            }
-            const product = await this.prisma.product.update({
-                where: { product_id: input.product_id },
+            return this.prisma.product.update({
+                where: { product_id: product_id },
                 data: {
                     product_name: input.product_name,
                     product_status: input.product_status,
@@ -83,9 +78,17 @@ export class ProductService {
                     images: true,
                 },
             });
-            return product;
         } catch (err) {
             throw new Error(err);
+        }
+    }
+
+    async deleteProduct(product_id: number) {
+        try {
+            const actDelete = await this.prisma.product.delete({ where: { product_id } });
+            return !!actDelete;
+        } catch (error) {
+            throw new GraphQLError(error);
         }
     }
 }

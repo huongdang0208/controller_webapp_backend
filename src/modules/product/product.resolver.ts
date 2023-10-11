@@ -1,5 +1,4 @@
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
-// import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import { Product } from "./entities/product.entity";
 import { ProductService } from "./product.service";
 import { CreateProductInput } from "./dto/create-product.input";
@@ -10,7 +9,6 @@ import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { RolesGuard } from "../../guards/roles/roles.guard";
-// import { FileUpload } from "../file/entities/file.entity";
 
 @Resolver()
 export class ProductResolver {
@@ -24,16 +22,23 @@ export class ProductResolver {
     }
 
     @Mutation(() => Product)
-    // @Roles(Role.Admin)
+    @Roles(Role.Admin)
     @UseGuards(RolesGuard)
     async create_product(@Args("input") input: CreateProductInput) {
         return this.productService.createProduct(input);
     }
 
     @Mutation(() => Product)
-    // @Roles(Role.Admin)
+    @Roles(Role.Admin)
     @UseGuards(RolesGuard)
-    async update_product(@Args("input") input: UpdateProductInput) {
-        return this.productService.updateProduct(input);
+    async update_product(@Args("productId") productId: number, @Args("input") input: UpdateProductInput) {
+        return this.productService.updateProduct(productId, input);
+    }
+
+    @Mutation(() => Boolean)
+    @UseGuards(JwtAuthGuard)
+    @Roles(Role.Admin)
+    async delete_blog(@Args("productId") productId: number) {
+        return this.productService.deleteProduct(productId);
     }
 }

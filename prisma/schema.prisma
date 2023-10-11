@@ -17,7 +17,7 @@ model User {
 
     email    String    @unique
     password String
-    username String
+    username String    @unique
     role     String
     orders   Order[]
     Session  Session[]
@@ -50,6 +50,8 @@ model Order {
     ownerId Int
     owner   User @relation(fields: [ownerId], references: [id])
 
+    product Product @relation(fields: [productId], references: [product_id])
+
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 }
@@ -57,12 +59,12 @@ model Order {
 model Blog {
     blog_id     Int    @id @default(autoincrement())
     title       String
-    description String
+    description String @db.LongText
 
-    images    File @relation(fields: [images_id], references: [file_id])
-    images_id Int
+    images    File? @relation(fields: [images_id], references: [file_id])
+    images_id Int?
 
-    product CategoriesOnPosts[]
+    products Product[]
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
@@ -73,25 +75,20 @@ model Product {
 
     product_name       String
     data               Data?
-    detail_description String
-    instruction        String
-    images_id          Int
-    images    File @relation(fields: [images_id], references: [file_id])
+
+    detail_description String? @db.LongText
+    instruction        String? @db.LongText
+
+    images_id          Int?
+    images             File?   @relation(fields: [images_id], references: [file_id])
+
     product_status     String
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    blog CategoriesOnPosts[]
-}
-
-model CategoriesOnPosts {
-    blog      Blog    @relation(fields: [blogId], references: [blog_id])
-    blogId    Int
-    product   Product @relation(fields: [productId], references: [product_id])
-    productId Int
-
-    @@id([blogId, productId])
+    blogs Blog[]
+    Order Order[]
 }
 
 model Data {
@@ -113,7 +110,7 @@ model File {
     path     String
     cdn_path String
 
-    blog Blog[]
+    blog    Blog[]
     product Product[]
 
     created_at DateTime @default(now())
