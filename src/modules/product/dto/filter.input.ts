@@ -1,9 +1,10 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
+import { OrderEnum } from "../../../utils/types/order.enum";
 
 @InputType()
 export class FilterProductInput {
-    @Field(() => String, { nullable: true })
-    order: string;
+    @Field(() => OrderEnum, { nullable: true })
+    order?: OrderEnum;
 
     @Field(() => Int, { nullable: true })
     page: number;

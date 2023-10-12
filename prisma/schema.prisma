@@ -73,16 +73,18 @@ model Blog {
 model Product {
     product_id Int @id @default(autoincrement())
 
-    product_name       String
-    data               Data?
+    product_name String
+    data         Data?
 
     detail_description String? @db.LongText
     instruction        String? @db.LongText
 
-    images_id          Int?
-    images             File?   @relation(fields: [images_id], references: [file_id])
+    images_id Int?
+    images    File? @relation(fields: [images_id], references: [file_id])
 
-    product_status     String
+    product_status String
+    price          Int
+    product_characteristic String? @db.LongText
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt

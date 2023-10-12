@@ -9,16 +9,23 @@ import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { RolesGuard } from "../../guards/roles/roles.guard";
+import { ProductsResponse } from "./dto/product.response";
 
 @Resolver()
 export class ProductResolver {
     constructor(private readonly productService: ProductService) {}
 
-    @Query(() => [Product])
+    @Query(() => [ProductsResponse])
     @UseGuards(JwtAuthGuard)
-    async products(@Args("filter") filter: FilterProductInput) {
+    async products(@Args("filter", { nullable: true }) filter: FilterProductInput) {
         const products = await this.productService.queryAllProduct(filter);
         return products || [];
+    }
+
+    @Query(() => Product)
+    @UseGuards(JwtAuthGuard)
+    async product(@Args("product_id") product_id: number) {
+        return this.productService.findProductById(product_id);
     }
 
     @Mutation(() => Product)
@@ -38,7 +45,7 @@ export class ProductResolver {
     @Mutation(() => Boolean)
     @UseGuards(JwtAuthGuard)
     @Roles(Role.Admin)
-    async delete_blog(@Args("productId") productId: number) {
+    async delete_product(@Args("productId") productId: number) {
         return this.productService.deleteProduct(productId);
     }
 }

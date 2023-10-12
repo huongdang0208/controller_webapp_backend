@@ -1,4 +1,6 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { IsNumber, IsOptional, IsString } from "class-validator";
+import { FileUpload } from "../../../modules/file/entities/file.entity";
 import { Data } from "./data.entity";
 
 @ObjectType()
@@ -18,11 +20,20 @@ export class Product {
     @Field(() => String, { nullable: true })
     instruction: string;
 
-    @Field({ nullable: true })
-    images: string;
+    @Field(() => FileUpload, { nullable: true })
+    images: FileUpload;
 
     @Field(() => String, { nullable: true })
     product_status: string;
+
+    @Field(() => Int, { nullable: false })
+    @IsNumber()
+    price: number;
+
+    @Field(() => String, { nullable: true })
+    @IsOptional()
+    @IsString()
+    product_characteristic: string;
 
     @Field(() => Date, { nullable: true })
     created_at: Date;

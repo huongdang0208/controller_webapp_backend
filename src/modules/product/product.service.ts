@@ -5,28 +5,49 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductInput } from "./dto/create-product.input";
 import { FilterProductInput } from "./dto/filter.input";
 import { UpdateProductInput } from "./dto/update-product.input";
-import { Product } from "./entities/product.entity";
 import { GraphQLError } from "graphql";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class ProductService {
     constructor(private prisma: PrismaService) {}
 
-    async queryAllProduct(filter: FilterProductInput): Promise<Product[]> {
+    async queryAllProduct({ page = 1, perPage = 10, order }: FilterProductInput){
+        const skip = (page - 1) * perPage;
         try {
-            const products = await this.prisma.product.findMany({
-                skip: filter?.page || 0,
-                take: filter?.perPage || 1000,
-                where: {
-                    product_status: {
-                        contains: filter?.status || "",
-                    },
+            let config: Prisma.ProductFindManyArgs = {
+                skip: skip || 0,
+                take: perPage || 10,
+                include: {
+                    images: true,
                 },
-            });
-            if (products) return products as unknown as Product[];
-            return [];
+            };
+
+            if (order) {
+                config = {
+                    ...config,
+                    orderBy: {
+                        product_name: order,
+                    },
+                };
+            }
+
+            const products = await this.prisma.product.findMany(config);
+
+            // Paginate info
+            const total = await this.prisma.product.count();
+            const totalPage = Math.ceil(total / perPage);
+
+            return {
+                products,
+                paginateInfo: {
+                    totalCount: total,
+                    currentPage: page,
+                    totalPage,
+                },
+            };
         } catch (err) {
-            throw new GraphQLError(err);
+            throw new Error(err);
         }
     }
 
@@ -46,6 +67,8 @@ export class ProductService {
                     },
                     images_id: input.images,
                     product_status: input.product_status,
+                    price: input.price,
+                    product_characteristic: input.product_characteristic,
                 },
                 include: {
                     images: true,
@@ -66,6 +89,8 @@ export class ProductService {
                     detail_description: input.detail_description,
                     instruction: input.instruction,
                     images_id: input.images,
+                    price: input.price,
+                    product_characteristic: input.product_characteristic,
                     data: {
                         update: {
                             size: input?.data?.size,
@@ -80,6 +105,27 @@ export class ProductService {
             });
         } catch (err) {
             throw new Error(err);
+        }
+    }
+
+    async findProductById (product_id: number) {
+        try {
+            const product = this.prisma.product.findUnique({
+                where: {
+                    product_id,
+                },
+                include: {
+                    images: true,
+                },
+            });
+
+            if (!product) {
+                throw new GraphQLError("Product not found");
+            }
+
+            return product;
+        } catch (err) {
+            throw new GraphQLError(err);
         }
     }
 
