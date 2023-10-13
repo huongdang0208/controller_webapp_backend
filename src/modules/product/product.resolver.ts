@@ -15,7 +15,7 @@ import { ProductsResponse } from "./dto/product.response";
 export class ProductResolver {
     constructor(private readonly productService: ProductService) {}
 
-    @Query(() => [ProductsResponse])
+    @Query(() => ProductsResponse)
     @UseGuards(JwtAuthGuard)
     async products(@Args("filter", { nullable: true }) filter: FilterProductInput) {
         const products = await this.productService.queryAllProduct(filter);
@@ -29,15 +29,15 @@ export class ProductResolver {
     }
 
     @Mutation(() => Product)
+    @UseGuards(JwtAuthGuard)
     @Roles(Role.Admin)
-    @UseGuards(RolesGuard)
     async create_product(@Args("input") input: CreateProductInput) {
         return this.productService.createProduct(input);
     }
 
     @Mutation(() => Product)
+    @UseGuards(JwtAuthGuard)
     @Roles(Role.Admin)
-    @UseGuards(RolesGuard)
     async update_product(@Args("productId") productId: number, @Args("input") input: UpdateProductInput) {
         return this.productService.updateProduct(productId, input);
     }
