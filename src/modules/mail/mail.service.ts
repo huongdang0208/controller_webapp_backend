@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Order } from "../order/entities/order.entity";
 import { User } from "../user/entities/user.entity";
 import { ConfigService } from "@nestjs/config";
+import { ContactInput } from "../contact/dto/contact.input";
 
 @Injectable()
 export class MailService {
@@ -21,6 +22,19 @@ export class MailService {
                 name: user.username,
                 user,
                 order,
+            },
+        });
+    }
+
+    async sendContactInfo(contactInfo: ContactInput) {
+        console.log("😎 ", contactInfo);
+        await this.mailerService.sendMail({
+            to: this.config.get<string>("mail.default.to"),
+            subject: "Confirm your request contact to Davinci!",
+            template: "contact", // `.hbs` extension is appended automatically
+            context: {
+                name: contactInfo.name,
+                contactInfo: contactInfo,
             },
         });
     }

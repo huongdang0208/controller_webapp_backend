@@ -8,7 +8,7 @@ import { Roles } from "../../decorators/roles/roles.decorator";
 import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
-import { RolesGuard } from "../../guards/roles/roles.guard";
+// import { RolesGuard } from "../../guards/roles/roles.guard";
 import { ProductsResponse } from "./dto/product.response";
 
 @Resolver()
