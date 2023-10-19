@@ -22,6 +22,6 @@ export class FileController {
     @UseGuards(JwtAuthGuard)
     @Roles(Role.Admin)
     uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
-        console.log(files);
+        return this.fileService.saveFiles(files);
     }
 }

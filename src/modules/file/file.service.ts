@@ -8,7 +8,6 @@ export class FileService {
 
     async saveFile(file: Express.Multer.File) {
         const { filename, path, size, mimetype } = file;
-        console.log(path)
 
         // replace \\ -> /
         const newPath = path.replace(/\\/g, "/");
@@ -25,6 +24,37 @@ export class FileService {
                     cdn_path: cdnPath,
                 },
             });
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
+    async saveFiles(files: Array<Express.Multer.File>) {
+        try {
+            const data = [];
+
+            for (const file of files) {
+                const { filename, path, size, mimetype } = file;
+
+                // replace \\ -> /
+                const newPath = path.replace(/\\/g, "/");
+
+                const cdnPath = `cdn/${newPath}`;
+
+                data.push({
+                    filename: filename,
+                    mimetype: mimetype,
+                    size: size,
+                    path: newPath,
+                    cdn_path: cdnPath,
+                });
+            }
+
+            await this.prisma.file.createMany({
+                data: data,
+            });
+
+            return data;
         } catch (e) {
             throw new GraphQLError(e);
         }

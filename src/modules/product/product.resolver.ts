@@ -8,7 +8,6 @@ import { Roles } from "../../decorators/roles/roles.decorator";
 import { UseGuards } from "@nestjs/common";
 import { FilterProductInput } from "./dto/filter.input";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
-// import { RolesGuard } from "../../guards/roles/roles.guard";
 import { ProductsResponse } from "./dto/product.response";
 
 @Resolver()
@@ -16,14 +15,12 @@ export class ProductResolver {
     constructor(private readonly productService: ProductService) {}
 
     @Query(() => ProductsResponse)
-    @UseGuards(JwtAuthGuard)
     async products(@Args("filter", { nullable: true }) filter: FilterProductInput) {
         const products = await this.productService.queryAllProduct(filter);
         return products || [];
     }
 
     @Query(() => Product)
-    @UseGuards(JwtAuthGuard)
     async product(@Args("product_id") product_id: number) {
         return this.productService.findProductById(product_id);
     }
