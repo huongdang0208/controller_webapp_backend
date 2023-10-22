@@ -1,11 +1,12 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Field, ObjectType } from "@nestjs/graphql";
+import { OrderStatusEnum } from "../../../utils/types/order.enum";
 
 @ObjectType()
 export class Order {
-    @Field(() => Int)
+    @Field(() => Number)
     orderId: number;
 
-    @Field(() => Int, { nullable: false })
+    @Field(() => Number, { nullable: false })
     productId: number;
 
     @Field(() => String, { nullable: false })
@@ -17,16 +18,16 @@ export class Order {
     @Field(() => String, { nullable: false })
     receiverPhone: string;
 
-    @Field(() => Int, { nullable: false })
+    @Field(() => Number, { nullable: false })
     quantity: number;
 
-    @Field(() => Int, { nullable: false })
+    @Field(() => Number, { nullable: false })
     totalPrice: number;
 
-    @Field(() => String, { nullable: false })
-    orderStatus: string;
+    @Field(() => OrderStatusEnum, { nullable: false })
+    orderStatus: OrderStatusEnum;
 
-    @Field(() => Int, { nullable: false })
+    @Field(() => Number, { nullable: false })
     ownerId: number;
 
     @Field({ nullable: true })
