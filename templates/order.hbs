@@ -1,44 +1,45 @@
-<div class="container">
-  <div class="title">
-      <h2>Product Order Form</h2>
-  </div>
-<div class="d-flex">
-  <form action="" method="">
-    <label>
-      <span class="fname">Name<span class="required">*</span></span>
-      <p>{{user.username}}</p>
-    </label>
-    <label>
-      <span>Receiver location</span>
-      <p>{{order.receiverLocation}}</p>
-    </label>
-    <label>
-      <span>Phone<span class="required">*</span></span>
-      <p>{{order.receiverPhone}}</p>
-    </label>
-    <label>
-      <span>Email Address <span class="required">*</span></span>
-      <p>{{user.email}}</p>
-    </label>
-  </form>
-  <div class="Yorder">
-    <table>
-      <tr>
-        <th colspan="2">Order</th>
-      </tr>
-      <tr>
-        <td>{{order.productName}}</td>
-        <td>{{order.totalPrice}}</td>
-      </tr>
-      <tr>
-        <td>Discount</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td>Shipping</td>
-        <td>Free shipping</td>
-      </tr>
-    </table><br>
-  </div><!-- Yorder -->
- </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="mainstyle.css">
+  <title>Order Form</title>
+</head>
+
+<body>
+  <section class="container">
+
+    <h2>Confirm customer order</h2>
+
+    <table class="order-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>E-Mail</th>
+          <th>Telephone</th>
+          <th>Receiver Location</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Order At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{user?.username}}</td>
+          <td>{{user?.email}}</td>
+          <td>{{order?.receiverPhone}}</td>
+          <td>{{order?.receiverLocation}}</td>
+          <td>{{order?.productName}}</td>
+          <td>{{order?.quantity}}</td>
+          <td>{{order?.totalPrice}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </section>
+</body>
+
+</html>
