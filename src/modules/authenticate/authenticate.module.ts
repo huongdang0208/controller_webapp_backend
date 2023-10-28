@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { HttpModule } from "@nestjs/axios";
 
 import { AuthenticateService } from "./authenticate.service";
 import { AuthenticateResolver } from "./authenticate.resolver";
@@ -9,6 +10,7 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { UserModule } from "../user/user.module";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ApiModule } from "../api/api.module";
 
 @Module({
     imports: [
@@ -24,6 +26,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         }),
         PassportModule,
         UserModule,
+        HttpModule,
+        ApiModule,
     ],
     providers: [AuthenticateResolver, AuthenticateService, LocalSerializer, LocalStrategy, JwtStrategy],
 })

@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { PassportModule } from "@nestjs/passport";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { join } from "path";
+import { HttpModule } from "@nestjs/axios";
 
-import { PrismaModule } from "./modules/prisma/prisma.module";
 import { UserModule } from "./modules/user/user.module";
 import { AuthenticateModule } from "./modules/authenticate/authenticate.module";
 import { BlogModule } from "./modules/blog/blog.module";
@@ -18,9 +18,7 @@ import { OrderModule } from "./modules/order/order.module";
 import { FileModule } from "./modules/file/file.module";
 import { AppController } from "./app.controller";
 import { ContactModule } from "./modules/contact/contact.module";
-import { APP_GUARD } from "@nestjs/core";
-import { RolesGuard } from "./guards/roles/roles.guard";
-import { JwtAuthGuard } from "./guards/auth/auth.guard";
+import { ApiModule } from './modules/api/api.module';
 
 @Module({
     imports: [
@@ -44,8 +42,16 @@ import { JwtAuthGuard } from "./guards/auth/auth.guard";
                 dotfiles: "ignore",
             },
         }),
+        HttpModule.registerAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                baseURL: configService.get("API_BASE_URL"),
+                timeout: 5000,
+                maxRedirects: 5,
+            }),
+            inject: [ConfigService],
+        }),
         PassportModule.register({ session: true }),
-        PrismaModule,
         UserModule,
         AuthenticateModule,
         BlogModule,
@@ -53,7 +59,8 @@ import { JwtAuthGuard } from "./guards/auth/auth.guard";
         MailModule,
         OrderModule,
         FileModule,
-        ContactModule
+        ContactModule,
+        ApiModule,
     ],
     controllers: [AppController],
     providers: [],

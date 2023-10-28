@@ -16,8 +16,8 @@ export class ProductResolver {
 
     @Query(() => ProductsResponse)
     async products(@Args("filter", { nullable: true }) filter: FilterProductInput) {
-        const products = await this.productService.queryAllProduct(filter);
-        return products || [];
+        // const products = await this.productService.queryAllProduct(filter);
+        // return products || [];
     }
 
     @Query(() => Product)

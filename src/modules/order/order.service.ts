@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
 import { OrderInput } from "./dto/order.input";
 import { GraphQLError } from "graphql";
 import { MailService } from "../mail/mail.service";
@@ -11,7 +10,6 @@ import { ProductService } from "../product/product.service";
 @Injectable()
 export class OrderService {
     constructor(
-        private prisma: PrismaService,
         private mailService: MailService,
         private productService: ProductService,
     ) {}
@@ -19,30 +17,30 @@ export class OrderService {
     async createOrder(input: OrderInput, userData: User) {
         try {
             // Get product
-            const product = await this.productService.findProductById(input.productId);
+            // const product = await this.productService.findProductById(input.productId);
 
-            if (!product) {
-                throw new GraphQLError("Product not found");
-            }
+            // if (!product) {
+            //     throw new GraphQLError("Product not found");
+            // }
 
-            const order = await this.prisma.order.create({
-                data: {
-                    productId: product.product_id,
-                    productName: product.product_name,
-                    receiverLocation: input.receiverLocation,
-                    receiverPhone: input.receiverPhone,
-                    quantity: input.quantity,
-                    totalPrice: input.totalPrice,
-                    ownerId: userData.id,
-                    orderStatus: OrderStatusEnum.PENDING,
-                },
-            });
+            // const order = await this.prisma.order.create({
+            //     data: {
+            //         productId: product.product_id,
+            //         productName: product.product_name,
+            //         receiverLocation: input.receiverLocation,
+            //         receiverPhone: input.receiverPhone,
+            //         quantity: input.quantity,
+            //         totalPrice: input.totalPrice,
+            //         ownerId: userData.id,
+            //         orderStatus: OrderStatusEnum.PENDING,
+            //     },
+            // });
 
-            if (order) {
-                await this.mailService.sendUserOrder(userData, order as Order);
+            // if (order) {
+            //     await this.mailService.sendUserOrder(userData, order as Order);
 
-                return order;
-            }
+            //     return order;
+            // }
         } catch (err) {
             throw new GraphQLError(err);
         }

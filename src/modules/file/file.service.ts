@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
 import { GraphQLError } from "graphql";
 
 @Injectable()
 export class FileService {
-    constructor(private prisma: PrismaService) {}
+    constructor() {}
 
     async saveFile(file: Express.Multer.File) {
         const { filename, path, size, mimetype } = file;
@@ -15,15 +14,15 @@ export class FileService {
         const cdnPath = `cdn/${newPath}`;
 
         try {
-            return this.prisma.file.create({
-                data: {
-                    filename: filename,
-                    mimetype: mimetype,
-                    size: size,
-                    path: newPath,
-                    cdn_path: cdnPath,
-                },
-            });
+            // return this.prisma.file.create({
+            //     data: {
+            //         filename: filename,
+            //         mimetype: mimetype,
+            //         size: size,
+            //         path: newPath,
+            //         cdn_path: cdnPath,
+            //     },
+            // });
         } catch (e) {
             throw new GraphQLError(e);
         }
@@ -50,9 +49,9 @@ export class FileService {
                 });
             }
 
-            await this.prisma.file.createMany({
-                data: data,
-            });
+            // await this.prisma.file.createMany({
+            //     data: data,
+            // });
 
             return data;
         } catch (e) {

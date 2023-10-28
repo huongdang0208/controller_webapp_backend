@@ -4,66 +4,36 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { LoginInput } from "./dto/login.dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { PrismaService } from "../prisma/prisma.service";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
-import { Role } from "../../utils/types/role.enum";
 import { RefreshTokenInput } from "./dto/refreshToken.dto";
 import { GraphQLError } from "graphql/error";
 import { LogoutInput } from "./dto/logout.dto";
+import { AuthApiService } from "../api/auth.service";
 
 @Injectable()
 export class AuthenticateService {
     constructor(
-        private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
         private readonly config: ConfigService,
-    ) { }
-
-    private async signTokens(userId: number, email: string) {
-        const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync(
-                {
-                    sub: userId,
-                    email,
-                },
-                {
-                    secret: this.config.get("jwt.secret"),
-                    expiresIn: this.config.get<string>("jwt.liveTime"),
-                },
-            ),
-            this.jwtService.signAsync(
-                {
-                    sub: userId,
-                },
-                {
-                    secret: this.config.get("jwt.secret"),
-                    expiresIn: this.config.get<string>("jwt.refreshTokenLiveTime"),
-                },
-            ),
-        ]);
-
-        return {
-            accessToken,
-            refreshToken,
-        };
-    }
+        private readonly authApiService: AuthApiService,
+    ) {}
 
     async validateUser(username: string, password: string) {
         try {
-            const user = await this.prisma.user.findFirst({ where: { username } });
+            const user = await this.authApiService.findUserByUsername(username);
 
             if (user) {
                 const result = await bcrypt.compare(password, user.password);
                 if (result) {
                     return user;
                 } else {
-                    throw new GraphQLError("Credentials incorrect");
+                    throw new Error("Credentials incorrect");
                 }
             }
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
-                    throw new GraphQLError("Credentials taken");
+                    throw new Error("Email đã được đăng kí");
                 }
             } else {
                 throw error;
@@ -72,31 +42,12 @@ export class AuthenticateService {
     }
 
     async register(registerAuthenticateInput: RegisterAuthenticateInput) {
-        const saltRounds = 10;
-
         try {
-            // Check username and email exist first
-            const userExist = await this.prisma.user.findMany({
-                where: {
-                    OR: [{ username: registerAuthenticateInput.username }, { email: registerAuthenticateInput.email }],
-                },
-            });
-
-            if (userExist.length > 0) {
-                throw new GraphQLError("Username or email already exist");
+            const res = await this.authApiService.register(registerAuthenticateInput);
+            if (!res) {
             }
-
-            // Create user
-            const hash = await bcrypt.hash(registerAuthenticateInput.password, saltRounds);
-
-            return this.prisma.user.create({
-                data: {
-                    username: registerAuthenticateInput.username,
-                    email: registerAuthenticateInput.email,
-                    password: hash,
-                    role: Role.User,
-                },
-            });
+            console.log(res);
+            return res;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
@@ -110,38 +61,10 @@ export class AuthenticateService {
 
     async login(loginAuthenticateInput: LoginInput) {
         try {
-            const user = await this.prisma.user.findFirst({
-                where: {
-                    username: loginAuthenticateInput.username,
-                },
-            });
-
-            if (!user) {
-                throw new GraphQLError("Thông tin đăng nhập không hợp lệ");
+            const res = await this.authApiService.login(loginAuthenticateInput);
+            if (!res) {
             }
-
-            const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
-
-            if (!result) {
-                throw new GraphQLError("Thông tin đăng nhập không hợp lệ");
-            }
-
-            const { accessToken, refreshToken } = await this.signTokens(user.id, user.email);
-
-            // Save to session
-            await this.prisma.session.create({
-                data: {
-                    userId: user.id,
-                    accessToken,
-                    refreshToken,
-                },
-            });
-
-            return {
-                accessToken,
-                refreshToken,
-                user: user,
-            };
+            return res;
         } catch (error) {
             console.error(error);
             throw error;
@@ -150,43 +73,6 @@ export class AuthenticateService {
 
     async refreshToken(params: RefreshTokenInput, accessToken: string) {
         try {
-            // Get userId from accessToken
-            const { sub: userId } = await this.jwtService.verifyAsync(accessToken, {
-                secret: this.config.get("jwt.secret"),
-                ignoreExpiration: true,
-            });
-
-            const session = await this.prisma.session.findFirst({
-                where: {
-                    userId,
-                    refreshToken: params.refreshToken,
-                },
-                include: {
-                    user: true,
-                },
-            });
-
-            if (!session) {
-                throw new GraphQLError("Session Invalid");
-            }
-
-            const { accessToken: newAccessToken } = await this.signTokens(session.user.id, session.user.email);
-
-            // Update session
-            await this.prisma.session.update({
-                where: {
-                    id: session.id,
-                },
-                data: {
-                    accessToken: newAccessToken,
-                },
-            });
-
-            return {
-                accessToken: newAccessToken,
-                refreshToken: session.refreshToken,
-                user: session.user,
-            };
         } catch (err) {
             throw new GraphQLError(err);
         }
@@ -194,28 +80,25 @@ export class AuthenticateService {
 
     async logout(params: LogoutInput, sessionId: number) {
         try {
-            await this.prisma.session.delete({
-                where: {
-                    id: sessionId,
-                    refreshToken: params.refreshToken,
-                },
-            });
-
-            return true;
-        } catch (e) {
-            throw new GraphQLError(e);
+            const res = await this.authApiService.logout({ params, sessionId: sessionId });
+            if (!res) {
+            }
+            return res;
+        } catch (err) {
+            throw new GraphQLError(err);
         }
     }
 
     async getSessionByAccessToken(token: string, userId: number) {
-        return this.prisma.session.findFirst({
-            where: {
-                accessToken: token,
-                userId,
-            },
-            include: {
-                user: true,
-            },
-        });
+        // return this.prisma.session.findFirst({
+        //     where: {
+        //         accessToken: token,
+        //         userId,
+        //     },
+        //     include: {
+        //         user: true,
+        //     },
+        // });
+        return await this.authApiService.getSession(token, userId);
     }
 }
