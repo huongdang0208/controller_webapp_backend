@@ -73,6 +73,10 @@ export class AuthenticateService {
 
     async refreshToken(params: RefreshTokenInput, accessToken: string) {
         try {
+            const res = await this.authApiService.refreshToken(params, accessToken);
+            if (!res) {
+            }
+            return res;
         } catch (err) {
             throw new GraphQLError(err);
         }
@@ -90,15 +94,6 @@ export class AuthenticateService {
     }
 
     async getSessionByAccessToken(token: string, userId: number) {
-        // return this.prisma.session.findFirst({
-        //     where: {
-        //         accessToken: token,
-        //         userId,
-        //     },
-        //     include: {
-        //         user: true,
-        //     },
-        // });
         return await this.authApiService.getSession(token, userId);
     }
 }

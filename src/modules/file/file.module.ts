@@ -7,12 +7,13 @@ import { extname } from "path";
 import { v4 as uuidv4 } from "uuid";
 import dayjs from "dayjs";
 import { ensureDirSync } from "fs-extra";
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
     providers: [FileService],
     controllers: [FileController],
     imports: [
-        MulterModule.registerAsync({
+    MulterModule.registerAsync({
             useFactory: () => ({
                 storage: diskStorage({
                     destination: (_, file, callback) => {
@@ -32,6 +33,7 @@ import { ensureDirSync } from "fs-extra";
                 }),
             }),
         }),
+        HttpModule
     ],
 })
 export class FileModule {}
