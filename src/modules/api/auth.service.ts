@@ -12,8 +12,11 @@ import { User, UserResponse } from "../user/entities/user.entity";
 
 @Injectable()
 export class AuthApiService {
-    constructor(private httpService: HttpService, private readonly config: ConfigService) {}
-    private readonly base_url = this.config.get('API_BASE_URL');
+    constructor(
+        private httpService: HttpService,
+        private readonly config: ConfigService,
+    ) {}
+    private readonly base_url = this.config.get("API_BASE_URL");
 
     async register(params: RegisterAuthenticateInput): Promise<RegisterResponseBlock> {
         const { data } = await firstValueFrom(
@@ -35,7 +38,7 @@ export class AuthApiService {
             ),
         );
         console.log(data);
-        return data;
+        return data?.node;
     }
 
     async logout(params: any): Promise<LogoutResponseBlock> {
@@ -76,7 +79,7 @@ export class AuthApiService {
 
     async findUserByUsername(username: string): Promise<UserResponse> {
         const { data } = await firstValueFrom(
-            this.httpService.get(`${this.base_url}${USER_BY_EMAIL_URL}/${username}}`).pipe(
+            this.httpService.get(`${this.base_url}/user/username`, { params: { username } }).pipe(
                 catchError((err: AxiosError) => {
                     throw err;
                 }),
