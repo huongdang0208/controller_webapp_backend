@@ -1,6 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { AuthApiService } from "../api/auth.service";
 import { User } from "./entities/user.entity";
 import { GraphQLError } from "graphql";
@@ -8,9 +6,8 @@ import { GraphQLError } from "graphql";
 @Injectable()
 export class UserService {
     constructor(
-        private config: ConfigService,
         private readonly authApiService: AuthApiService,
-    ) {}
+    ) { }
 
     async findOne(id: number) {
         try {
@@ -32,13 +29,7 @@ export class UserService {
             }
             return res;
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials taken");
-                }
-            } else {
-                throw error;
-            }
+            throw error;
         }
     }
 }

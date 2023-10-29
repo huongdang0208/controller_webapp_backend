@@ -6,7 +6,6 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
-        "start:prisma": "npx prisma studio",
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
@@ -18,12 +17,7 @@
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "dotenv -e .env2 jest -no--cache --watch --config ./test/jest-e2e.json",
-        "prisma:generate": "npx prisma generate",
-        "prisma:migrate": "npx prisma migrate dev --name init",
-        "prisma:format": "npx prisma format",
-        "postinstall": "npm run prisma:generate",
-        "prebuild": "npm run prisma:generate"
+        "test:e2e": "dotenv -e .env2 jest -no--cache --watch --config ./test/jest-e2e.json"
     },
     "dependencies": {
         "@apollo/server": "^4.9.3",
@@ -38,7 +32,6 @@
         "@nestjs/passport": "^10.0.2",
         "@nestjs/platform-express": "^10.2.5",
         "@nestjs/serve-static": "^4.0.0",
-        "@prisma/client": "5.2.0",
         "@types/graphql-upload": "^16.0.2",
         "@types/nodemailer": "^6.4.11",
         "@types/passport-jwt": "^3.0.10",

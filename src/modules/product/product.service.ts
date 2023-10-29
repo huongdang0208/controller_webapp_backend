@@ -5,7 +5,6 @@ import { CreateProductInput } from "./dto/create-product.input";
 import { FilterProductInput } from "./dto/filter.input";
 import { UpdateProductInput } from "./dto/update-product.input";
 import { GraphQLError } from "graphql";
-import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class ProductService {

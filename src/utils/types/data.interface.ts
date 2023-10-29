@@ -1,5 +1,4 @@
 import { Stream } from 'stream';
-import * as prisma from '@prisma/client';
 
 export interface FileUpload {
   file_id: number;
@@ -11,7 +10,7 @@ export interface FileUpload {
   createReadStream?: () => Stream;
 }
 
-export interface Dataproduct extends prisma.Data {
+export interface Dataproduct {
   data_id: number;
   size: number;
   weight: number;

@@ -1,22 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import bcrypt from "bcrypt";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
 import { LoginInput } from "./dto/login.dto";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
 import { RefreshTokenInput } from "./dto/refreshToken.dto";
-import { GraphQLError } from "graphql/error";
 import { LogoutInput } from "./dto/logout.dto";
 import { AuthApiService } from "../api/auth.service";
+import { GraphQLError } from "graphql";
 
 @Injectable()
 export class AuthenticateService {
     constructor(
-        private readonly jwtService: JwtService,
-        private readonly config: ConfigService,
         private readonly authApiService: AuthApiService,
-    ) {}
+    ) { }
 
     async validateUser(username: string, password: string) {
         try {
@@ -31,13 +26,7 @@ export class AuthenticateService {
                 }
             }
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new Error("Email đã được đăng kí");
-                }
-            } else {
-                throw error;
-            }
+            throw error;
         }
     }
 
@@ -49,13 +38,7 @@ export class AuthenticateService {
             console.log(res);
             return res;
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new GraphQLError("Credentials taken");
-                }
-            } else {
-                throw error;
-            }
+            throw error;
         }
     }
 
@@ -66,7 +49,6 @@ export class AuthenticateService {
             }
             return res;
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }

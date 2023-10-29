@@ -4,8 +4,6 @@ import { FilterBlogInput } from "./dto/query-blog.input";
 import { UpdateBlogInput } from "./dto/update-blog.input";
 import { removeVietnameseTones } from "../../utils/util/search";
 import { GraphQLError } from "graphql";
-import { Prisma } from "@prisma/client";
-import { BlogsResponse } from "./dto/query-blog.response";
 
 @Injectable()
 export class BlogService {
