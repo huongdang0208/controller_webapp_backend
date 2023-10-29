@@ -3,25 +3,27 @@ import { OrderInput } from "./dto/order.input";
 import { GraphQLError } from "graphql";
 import { MailService } from "../mail/mail.service";
 import { Order } from "./entities/order.entity";
-import { User } from "../user/entities/user.entity";
 import { OrderStatusEnum } from "../../utils/types/order.enum";
 import { ProductService } from "../product/product.service";
+import { OrderApiService } from "../api/order-api.service";
+import { AuthApiService } from '../api/auth.service';
 
 @Injectable()
 export class OrderService {
     constructor(
         private mailService: MailService,
         private productService: ProductService,
+        private orderApiService: OrderApiService,
+        private authApiService: AuthApiService
     ) {}
 
-    async createOrder(input: OrderInput, userData: User) {
+    async createOrder(input: OrderInput, session: any) {
         try {
-            // Get product
-            // const product = await this.productService.findProductById(input.productId);
-
-            // if (!product) {
-            //     throw new GraphQLError("Product not found");
-            // }
+            const product = await this.productService.findProductById(input.id_product);
+            const user = await this.authApiService.findUserById(Number(session?.session?.userId))
+            if (!product) {
+                throw new GraphQLError("Product not found");
+            }
 
             // const order = await this.prisma.order.create({
             //     data: {
@@ -35,12 +37,18 @@ export class OrderService {
             //         orderStatus: OrderStatusEnum.PENDING,
             //     },
             // });
+            const data = {
+                ...input,
+                status: OrderStatusEnum.PENDING,
+            };
 
-            // if (order) {
-            //     await this.mailService.sendUserOrder(userData, order as Order);
+            const order = await this.orderApiService.createOrderApi({ ...data, id_customer: session?.session?.userId });
 
-            //     return order;
-            // }
+            if (order) {
+                await this.mailService.sendUserOrder(user, order as Order);
+
+                return order;
+            }
         } catch (err) {
             throw new GraphQLError(err);
         }

@@ -1,24 +1,28 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsOptional } from "class-validator";
+import { IsNumber, IsOptional } from "class-validator";
 
 @InputType()
 export class OrderInput {
     @Field(() => Number, { nullable: false })
-    productId: number;
+    id_product: number;
 
     @Field(() => String, { nullable: false })
-    receiverLocation: string;
+    address: string;
 
     @Field(() => String, { nullable: false })
-    receiverPhone: string;
+    phone: string;
 
     @Field(() => Number, { nullable: false })
     quantity: number;
 
     @Field(() => Number, { nullable: false })
-    totalPrice: number;
+    total: number;
 
     @Field(() => String, { nullable: true })
     @IsOptional()
-    orderStatus: string;
+    status: string;
+
+    @IsNumber()
+    @IsOptional()
+    shipping_fee: number;
 }

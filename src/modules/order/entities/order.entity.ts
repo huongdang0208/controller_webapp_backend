@@ -4,31 +4,28 @@ import { OrderStatusEnum } from "../../../utils/types/order.enum";
 @ObjectType()
 export class Order {
     @Field(() => Number)
-    orderId: number;
+    id: number;
 
     @Field(() => Number, { nullable: false })
-    productId: number;
+    id_product: number;
 
     @Field(() => String, { nullable: false })
-    productName: string;
+    address: string;
 
     @Field(() => String, { nullable: false })
-    receiverLocation: string;
-
-    @Field(() => String, { nullable: false })
-    receiverPhone: string;
+    phone: string;
 
     @Field(() => Number, { nullable: false })
     quantity: number;
 
     @Field(() => Number, { nullable: false })
-    totalPrice: number;
+    total: number;
 
     @Field(() => OrderStatusEnum, { nullable: false })
-    orderStatus: OrderStatusEnum;
+    status: OrderStatusEnum;
 
     @Field(() => Number, { nullable: false })
-    ownerId: number;
+    id_customer: number;
 
     @Field({ nullable: true })
     created_date: string;

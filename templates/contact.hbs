@@ -1,35 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container">
-  <div class="title">
-      <h2 style="text-align: center">Your contact request form {{name}}</h2>
-  </div>
-<div class="d-flex">
-  <div class="Yorder">
-        <table style="border: 1px solid black">
-        <tr>
-            <th colspan="2">Order</th>
-        </tr>
-        <tr>
-            <td>Name</td>
-            <td>{{contactInfo?.name}}</td>
-        </tr>
-        <tr>
-            <td>Email</td>
-            <td>{{contactInfo?.email}}</td>
-        </tr>
-        <tr>
-            <td>Phone</td>
-            <td>{{contactInfo?.phone}}</td>
-        </tr>
-        <tr>
-            <td>Title</td>
-            <td>{{contactInfo?.title}}</td>
-        </tr>
-        <tr>
-            <td>Content</td>
-            <td>{{contactInfo?.content}}</td>
-        </tr>
-    </table><br>
-  </div><!-- Yorder -->
- </div>
-</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            margin-top: 50px;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .order-table th,
+        .order-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .order-table thead {
+            background-color: #f2f2f2;
+        }
+
+        .order-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <link rel="stylesheet" href="mainstyle.css">
+    <title>Order Form</title>
+</head>
+
+<body>
+    <section class="container">
+
+        <h2>Confirm customer order</h2>
+
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>E-Mail</th>
+                    <th>Telephone</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{contactInfo?.name}}</td>
+                    <td>{{contactInfo?.email}}</td>
+                    <td>{{contactInfo?.phone}}</td>
+                    <td>{{contactInfo?.title}}</td>
+                    <td>{{contactInfo?.content}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
+</body>
+
+</html>

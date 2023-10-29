@@ -33,6 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
         return {
             ...session.user,
             session: {
+                userId: session.userID,
                 id: session.id,
                 accessToken: session.accessToken,
                 refreshToken: session.refreshToken,

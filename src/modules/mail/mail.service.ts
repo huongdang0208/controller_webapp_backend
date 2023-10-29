@@ -13,6 +13,7 @@ export class MailService {
     ) {}
 
     async sendUserOrder(user: User, order: Order) {
+        console.log(user, ' ', order)
         await this.mailerService.sendMail({
             to: this.config.get<string>("mail.default.to"),
             subject: "Welcome to Davinci! Confirm your Email",

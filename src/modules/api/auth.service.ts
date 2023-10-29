@@ -87,6 +87,18 @@ export class AuthApiService {
         return data;
     }
 
+    async findUserById (id: number): Promise<UserResponse> {
+        const { data } = await firstValueFrom(
+            this.httpService.get(`${this.base_url}/user/${id}`, { params: { id } }).pipe(
+                catchError((err: AxiosError) => {
+                    throw err;
+                }),
+            ),
+        );
+
+        return data;
+    }
+
     async getSession(token: string, userID: number): Promise<any> {
         const { data } = await firstValueFrom(
             this.httpService
