@@ -3,7 +3,7 @@ import { CreateBlogInput } from "./dto/create-blog.input";
 import { FilterBlogInput } from "./dto/query-blog.input";
 import { UpdateBlogInput } from "./dto/update-blog.input";
 import { GraphQLError } from "graphql";
-import { BlogApiService } from "../api/blog.service";
+import { BlogApiService } from "../api/blog-api.service";
 
 @Injectable()
 export class BlogService {

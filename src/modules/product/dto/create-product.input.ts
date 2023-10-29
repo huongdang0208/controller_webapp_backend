@@ -6,7 +6,7 @@ import { DataInput } from "./data.input";
 export class CreateProductInput {
     @Field(() => String, { nullable: false })
     @IsString()
-    product_name: string;
+    name: string;
 
     @Field(() => DataInput, { nullable: true })
     data: DataInput;
@@ -14,7 +14,7 @@ export class CreateProductInput {
     @Field(() => String, { nullable: true })
     @IsOptional()
     @IsString()
-    detail_description: string;
+    description: string;
 
     @Field(() => String, { nullable: true })
     @IsOptional()
@@ -24,11 +24,11 @@ export class CreateProductInput {
     @Field(() => Number, { nullable: true })
     @IsOptional()
     @IsNumber()
-    images: number;
+    id_image: number;
 
     @Field(() => String, { nullable: false })
     @IsString()
-    product_status: string;
+    status: string;
 
     @Field(() => Int, { nullable: false })
     @IsNumber()

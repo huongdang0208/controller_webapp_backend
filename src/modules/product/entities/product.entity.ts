@@ -6,25 +6,25 @@ import { Data } from "./data.entity";
 @ObjectType()
 export class Product {
     @Field(() => Int)
-    product_id: number;
+    id: number;
 
     @Field(() => String, { nullable: false })
-    product_name: string;
+    name: string;
 
     @Field(() => Data, { nullable: true })
     data: Data;
 
     @Field(() => String, { nullable: false })
-    detail_description: string;
+    description: string;
 
     @Field(() => String, { nullable: true })
     instruction: string;
 
     @Field(() => FileUpload, { nullable: true })
-    images: FileUpload;
+    file_product_id_imageTofile: FileUpload;
 
     @Field(() => String, { nullable: true })
-    product_status: string;
+    status: string;
 
     @Field(() => Int, { nullable: false })
     @IsNumber()
@@ -37,7 +37,4 @@ export class Product {
 
     @Field(() => String, { nullable: true })
     created_date: string;
-
-    @Field(() => String, { nullable: true })
-    updated_at: string;
 }
