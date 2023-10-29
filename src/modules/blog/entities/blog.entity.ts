@@ -4,7 +4,7 @@ import { FileUpload } from "../../file/entities/file.entity";
 @ObjectType()
 export class Blog {
     @Field(() => Int, { nullable: true })
-    blog_id: number;
+    id: number;
 
     @Field(() => String, { nullable: false })
     title: string;
@@ -13,11 +13,9 @@ export class Blog {
     description: string;
 
     @Field(() => FileUpload, { nullable: true })
-    images: FileUpload;
+    file_blog_imageTofile: FileUpload;
 
     @Field({ nullable: true })
-    created_at: Date;
+    created_date: string;
 
-    @Field({ nullable: true })
-    updated_at: Date;
 }

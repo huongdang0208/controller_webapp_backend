@@ -18,7 +18,7 @@ import { OrderModule } from "./modules/order/order.module";
 import { FileModule } from "./modules/file/file.module";
 import { AppController } from "./app.controller";
 import { ContactModule } from "./modules/contact/contact.module";
-import { ApiModule } from './modules/api/api.module';
+import { ApiModule } from "./modules/api/api.module";
 
 @Module({
     imports: [
@@ -33,6 +33,9 @@ import { ApiModule } from './modules/api/api.module';
             sortSchema: true,
             introspection: true,
             plugins: [ApolloServerPluginLandingPageLocalDefault()],
+            buildSchemaOptions: {
+                dateScalarMode: "timestamp",
+            },
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, "..", "public/uploads"),

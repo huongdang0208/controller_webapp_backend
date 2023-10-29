@@ -37,7 +37,6 @@ export class AuthApiService {
                 }),
             ),
         );
-        console.log(data);
         return data?.node;
     }
 
@@ -49,7 +48,6 @@ export class AuthApiService {
                 }),
             ),
         );
-        console.log(data);
         return data;
     }
 
@@ -61,7 +59,7 @@ export class AuthApiService {
                 }),
             ),
         );
-        return data;
+        return data?.node;
     }
 
     async findUserByEmail(email: string): Promise<User> {

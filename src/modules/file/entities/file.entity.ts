@@ -3,7 +3,7 @@ import { ObjectType, Field } from "@nestjs/graphql";
 @ObjectType()
 export class FileUpload {
     @Field(() => Number)
-    file_id: number;
+    id: number;
 
     @Field(() => String, { nullable: false })
     filename: string;
@@ -21,8 +21,8 @@ export class FileUpload {
     cdn_path: string;
 
     @Field({ nullable: true })
-    created_at: Date;
+    created_at: string;
 
     @Field({ nullable: true })
-    updated_at: Date;
+    updated_at: string;
 }

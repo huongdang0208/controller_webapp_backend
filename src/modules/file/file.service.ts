@@ -48,10 +48,12 @@ export class FileService {
                     ),
             );
 
-            if (!res) {
+            console.log('🚀 ', res)
+
+            if (!res.data) {
                 throw new GraphQLError("Internal error");
             }
-            return res;
+            return res.data;
         } catch (e) {
             throw new GraphQLError(e);
         }

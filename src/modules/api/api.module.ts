@@ -2,10 +2,11 @@ import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
 import { AuthApiService } from "./auth.service";
+import { BlogApiService } from "./blog.service";
 
 @Module({
-    providers: [AuthApiService],
+    providers: [AuthApiService, BlogApiService],
     imports: [HttpModule],
-    exports: [AuthApiService],
+    exports: [AuthApiService, BlogApiService],
 })
 export class ApiModule {}

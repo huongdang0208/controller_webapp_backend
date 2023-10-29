@@ -26,10 +26,10 @@ export class User {
     role: Role;
 
     @Field({ nullable: true })
-    created_date: Date;
+    created_date: string;
 
     @Field({ nullable: true })
-    modify_date: Date;
+    modify_date: string;
 }
 
 @ObjectType()
@@ -56,8 +56,8 @@ export class UserResponse {
     role: Role;
 
     @Field({ nullable: true })
-    created_date: Date;
+    created_date: string;
 
     @Field({ nullable: true })
-    modify_date: Date;
+    modify_date: string;
 }

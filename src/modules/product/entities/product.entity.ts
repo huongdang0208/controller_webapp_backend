@@ -35,9 +35,9 @@ export class Product {
     @IsString()
     product_characteristic: string;
 
-    @Field(() => Date, { nullable: true })
-    created_at: Date;
+    @Field(() => String, { nullable: true })
+    created_date: string;
 
-    @Field(() => Date, { nullable: true })
-    updated_at: Date;
+    @Field(() => String, { nullable: true })
+    updated_at: string;
 }

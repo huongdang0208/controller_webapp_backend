@@ -13,7 +13,7 @@ export class CreateBlogInput {
 
     @Field(() => Number, { nullable: true })
     @IsOptional()
-    images: number;
+    image: number;
 
     // @Field()
     // product: Prisma.Blog
