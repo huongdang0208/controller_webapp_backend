@@ -12,7 +12,8 @@ export class UserResolver {
 
     @Query(() => User)
     @UseGuards(JwtAuthGuard)
-    me(@UserGraphql() user: User) {
+    me(@UserGraphql() session: {session: {userId: number}}) {
+        const user = this.userService.findOne(Number(session.session.userId));
         return user;
     }
 }
