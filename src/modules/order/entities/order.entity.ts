@@ -10,6 +10,9 @@ export class Order {
     id_product: number;
 
     @Field(() => String, { nullable: false })
+    name_product: string;
+
+    @Field(() => String, { nullable: false })
     address: string;
 
     @Field(() => String, { nullable: false })

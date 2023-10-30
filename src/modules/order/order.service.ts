@@ -46,7 +46,10 @@ export class OrderService {
             if (order) {
                 // await this.mailService.sendUserOrder(user, order as Order);
 
-                return order;
+                return {
+                    ...order,
+                    name_product: product.name
+                };
             }
         } catch (err) {
             throw new GraphQLError(err);
