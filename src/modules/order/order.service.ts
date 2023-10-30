@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { OrderInput } from "./dto/order.input";
+import { OrderFilter, OrderInput } from "./dto/order.input";
 import { GraphQLError } from "graphql";
 import { MailService } from "../mail/mail.service";
-import { Order } from "./entities/order.entity";
 import { OrderStatusEnum } from "../../utils/types/order.enum";
 import { ProductService } from "../product/product.service";
 import { OrderApiService } from "../api/order-api.service";
@@ -45,10 +44,19 @@ export class OrderService {
             const order = await this.orderApiService.createOrderApi({ ...data, id_customer: session?.session?.userId });
 
             if (order) {
-                await this.mailService.sendUserOrder(user, order as Order);
+                // await this.mailService.sendUserOrder(user, order as Order);
 
                 return order;
             }
+        } catch (err) {
+            throw new GraphQLError(err);
+        }
+    }
+
+    async getAllOrders (filter: OrderFilter) {
+        try {
+            const res = await this.orderApiService.getAllOrders(filter)
+            return res;
         } catch (err) {
             throw new GraphQLError(err);
         }

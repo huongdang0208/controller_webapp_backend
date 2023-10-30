@@ -4,6 +4,7 @@ import { Order } from "../order/entities/order.entity";
 import { User } from "../user/entities/user.entity";
 import { ConfigService } from "@nestjs/config";
 import { ContactInput } from "../contact/dto/contact.input";
+import { GraphQLError } from "graphql";
 
 @Injectable()
 export class MailService {
@@ -14,17 +15,23 @@ export class MailService {
 
     async sendUserOrder(user: User, order: Order) {
         console.log(user, ' ', order)
-        await this.mailerService.sendMail({
-            to: this.config.get<string>("mail.default.to"),
-            subject: "Welcome to Davinci! Confirm your Email",
-            template: "order", // `.hbs` extension is appended automatically
-            context: {
-                // ✏️ filling curly brackets with content
-                name: user.username,
-                user,
-                order,
-            },
-        });
+        try {
+
+            await this.mailerService.sendMail({
+                to: this.config.get<string>("mail.default.to"),
+                subject: "Welcome to Davinci! Confirm your Email",
+                template: "order", // `.hbs` extension is appended automatically
+                context: {
+                    // ✏️ filling curly brackets with content
+                    name: user.username,
+                    user,
+                    order,
+                },
+            });
+        } catch (err) {
+            console.log(err);
+            throw new GraphQLError(err)
+        }
     }
 
     async sendContactInfo(contactInfo: ContactInput) {

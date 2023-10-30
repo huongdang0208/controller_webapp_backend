@@ -33,3 +33,4 @@ export class Order {
     @Field({ nullable: true })
     modify_date: string;
 }
+

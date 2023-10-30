@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { IsNumber, IsOptional } from "class-validator";
+import { Field, InputType, Int } from "@nestjs/graphql";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 @InputType()
 export class OrderInput {
@@ -22,7 +22,20 @@ export class OrderInput {
     @IsOptional()
     status: string;
 
+    @Field(() => Int, { nullable: true })
     @IsNumber()
     @IsOptional()
     shipping_fee: number;
+}
+
+@InputType()
+export class OrderFilter {
+    @Field(() => Int, { nullable: true })
+    @IsNumber()
+    page: number;
+
+    @Field(() => Int, { nullable: true })
+    @IsNumber()
+    perPage: number;
+
 }
