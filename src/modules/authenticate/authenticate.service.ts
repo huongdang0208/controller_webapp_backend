@@ -1,17 +1,28 @@
 import { Injectable } from "@nestjs/common";
 import bcrypt from "bcrypt";
+import { GraphQLError } from "graphql";
+import { google, Auth } from "googleapis";
+
 import { LoginInput } from "./dto/login.dto";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
 import { RefreshTokenInput } from "./dto/refreshToken.dto";
 import { LogoutInput } from "./dto/logout.dto";
 import { AuthApiService } from "../api/auth.service";
-import { GraphQLError } from "graphql";
+import { ConfigService } from "@nestjs/config";
+import { jwtDecode } from "jwt-decode";
 
 @Injectable()
 export class AuthenticateService {
     constructor(
         private readonly authApiService: AuthApiService,
-    ) { }
+        private oauthClient: Auth.OAuth2Client,
+        private configService: ConfigService,
+    ) {
+        const clientID = this.configService.get("GOOGLE_CLIENT_ID");
+        const clientSecret = this.configService.get("GOOGLE_SECRET");
+
+        this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
+    }
 
     async validateUser(username: string, password: string) {
         try {
@@ -49,6 +60,29 @@ export class AuthenticateService {
             return res;
         } catch (error) {
             throw error;
+        }
+    }
+
+    async googleLogin(accessToken: string) {
+        const token: any = jwtDecode(accessToken);
+        try {
+
+            const user = await this.authApiService.findUserByEmail(token?.email);
+            console.log(user)
+            if (!user) {
+                const newUser = await this.authApiService.register({ username: token?.name, email: token?.email, password: token?.sub });
+                const authenticatedUser = await this.authApiService.login({ username: newUser.node?.user?.username, password: token?.sub });
+                if (!authenticatedUser) {
+                    throw new GraphQLError("Error");
+                }
+                return authenticatedUser;
+            }
+            const res = await this.authApiService.login({ username: token?.name, password: token?.sub });
+            if (!res) {
+            }
+            return res;
+        } catch (err) {
+            throw new GraphQLError(err);
         }
     }
 

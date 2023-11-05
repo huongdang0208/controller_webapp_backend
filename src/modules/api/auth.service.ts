@@ -65,7 +65,7 @@ export class AuthApiService {
     async findUserByEmail(email: string): Promise<User> {
         const encodedEmail = encodeURIComponent(email);
         const { data } = await firstValueFrom(
-            this.httpService.get(`${this.base_url}${USER_BY_EMAIL_URL}?email=${encodedEmail}`).pipe(
+            this.httpService.get(`${this.base_url}${USER_BY_EMAIL_URL}/email?email=${encodedEmail}`).pipe(
                 catchError((err: AxiosError) => {
                     throw err;
                 }),

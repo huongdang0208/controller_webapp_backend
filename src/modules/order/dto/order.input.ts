@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNumber, IsOptional } from "class-validator";
 
 @InputType()
 export class OrderInput {
@@ -11,6 +11,10 @@ export class OrderInput {
 
     @Field(() => String, { nullable: false })
     phone: string;
+
+    @Field(() => String, { nullable: false })
+    @IsEmail()
+    email: string;
 
     @Field(() => Number, { nullable: false })
     quantity: number;

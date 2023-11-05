@@ -1,4 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { IsOptional } from "class-validator";
 import { OrderStatusEnum } from "../../../utils/types/order.enum";
 
 @ObjectType()
@@ -27,7 +28,8 @@ export class Order {
     @Field(() => OrderStatusEnum, { nullable: false })
     status: OrderStatusEnum;
 
-    @Field(() => Number, { nullable: false })
+    @Field(() => Number, { nullable: true })
+    @IsOptional()
     id_customer: number;
 
     @Field({ nullable: true })

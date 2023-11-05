@@ -16,10 +16,9 @@ export class OrderService {
         private authApiService: AuthApiService
     ) {}
 
-    async createOrder(input: OrderInput, session: any) {
+    async createOrder(input: OrderInput) {
         try {
             const product = await this.productService.findProductById(input.id_product);
-            const user = await this.authApiService.findUserById(Number(session?.session?.userId))
             if (!product) {
                 throw new GraphQLError("Product not found");
             }
@@ -41,7 +40,7 @@ export class OrderService {
                 status: OrderStatusEnum.PENDING,
             };
 
-            const order = await this.orderApiService.createOrderApi({ ...data, id_customer: session?.session?.userId });
+            const order = await this.orderApiService.createOrderApi(data);
 
             if (order) {
                 // await this.mailService.sendUserOrder(user, order as Order);

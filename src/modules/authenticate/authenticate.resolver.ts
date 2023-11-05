@@ -41,6 +41,17 @@ export class AuthenticateResolver {
         };
     }
 
+    @Mutation(() => LoginResponseBlock)
+    async google(
+        @Args("accessToken")
+        accessToken: string,
+    ) {
+        return {
+            message: "logged in successfully",
+            node: await this.authenticateService.googleLogin(accessToken),
+        };
+    }
+
     @Mutation(() => LoginResponseBlock, { name: "refresh_token" })
     async refreshToken(@Args("params") params: RefreshTokenInput, @Context("req") req: Request) {
         const headers = req.headers;
