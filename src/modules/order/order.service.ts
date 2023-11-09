@@ -18,23 +18,10 @@ export class OrderService {
 
     async createOrder(input: OrderInput) {
         try {
-            const product = await this.productService.findProductById(input.id_product);
-            if (!product) {
-                throw new GraphQLError("Product not found");
-            }
-
-            // const order = await this.prisma.order.create({
-            //     data: {
-            //         productId: product.product_id,
-            //         productName: product.product_name,
-            //         receiverLocation: input.receiverLocation,
-            //         receiverPhone: input.receiverPhone,
-            //         quantity: input.quantity,
-            //         totalPrice: input.totalPrice,
-            //         ownerId: userData.id,
-            //         orderStatus: OrderStatusEnum.PENDING,
-            //     },
-            // });
+            // const product = await this.productService.findProductById(input.id_product);
+            // if (!product) {
+            //     throw new GraphQLError("Product not found");
+            // }
             const data = {
                 ...input,
                 status: OrderStatusEnum.PENDING,
@@ -43,14 +30,15 @@ export class OrderService {
             const order = await this.orderApiService.createOrderApi(data);
 
             if (order) {
-                // await this.mailService.sendUserOrder(user, order as Order);
+                await this.mailService.sendUserOrder({...order, product_name: 'test_product', name: 'Order Form'});
 
                 return {
                     ...order,
-                    name_product: product.name
+                    name_product: ''
                 };
             }
         } catch (err) {
+            console.log('service order error', err)
             throw new GraphQLError(err);
         }
     }

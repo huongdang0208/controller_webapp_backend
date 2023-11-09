@@ -45,7 +45,6 @@
       background-color: #f2f2f2;
     }
   </style>
-  <link rel="stylesheet" href="mainstyle.css">
   <title>Order Form</title>
 </head>
 
@@ -57,7 +56,6 @@
     <table class="order-table">
       <thead>
         <tr>
-          <th>Name</th>
           <th>E-Mail</th>
           <th>Telephone</th>
           <th>Receiver Location</th>
@@ -69,13 +67,12 @@
       </thead>
       <tbody>
         <tr>
-          <td>{{user}}</td>
-          <td>{{user}}</td>
-          <td>{{order}}</td>
-          <td>{{order}}</td>
-          <td>{{order}}</td>
-          <td>{{order}}</td>
-          <td>{{order}}</td>
+          <td>{{> order.email}}</td>
+          <td>{{> order.phone}}</td>
+          <td>{{> order.address}}</td>
+          <td>{{> order.product_name}}</td>
+          <td>{{> order.quantity}}</td>
+          <td>{{> order.created_date}}</td>
         </tr>
       </tbody>
     </table>

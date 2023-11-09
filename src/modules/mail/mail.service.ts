@@ -1,7 +1,5 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
-import { Order } from "../order/entities/order.entity";
-import { User } from "../user/entities/user.entity";
 import { ConfigService } from "@nestjs/config";
 import { ContactInput } from "../contact/dto/contact.input";
 import { GraphQLError } from "graphql";
@@ -13,24 +11,29 @@ export class MailService {
         private readonly config: ConfigService,
     ) {}
 
-    async sendUserOrder(user: User, order: Order) {
-        console.log(user, ' ', order)
+    async sendUserOrder(order: any) {
+        console.log(order);
         try {
-
             await this.mailerService.sendMail({
                 to: this.config.get<string>("mail.default.to"),
                 subject: "Welcome to Davinci! Confirm your Email",
                 template: "order", // `.hbs` extension is appended automatically
                 context: {
                     // ✏️ filling curly brackets with content
-                    name: user.username,
-                    user,
-                    order,
+                    name: "Confirm order form",
+                    order: {
+                        email: order.email,
+                        phone: order.phone,
+                        address: order.address,
+                        product_name: order.product_name,
+                        quantity: order.quantity,
+                        created_date: order.created_date,
+                      },
                 },
             });
         } catch (err) {
-            console.log(err);
-            throw new GraphQLError(err)
+            console.log('mail service error', err);
+            throw new GraphQLError(err);
         }
     }
 

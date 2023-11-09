@@ -68,10 +68,9 @@ export class AuthenticateService {
         try {
 
             const user = await this.authApiService.findUserByEmail(token?.email);
-            console.log(user)
             if (!user) {
-                const newUser = await this.authApiService.register({ username: token?.name, email: token?.email, password: token?.sub });
-                const authenticatedUser = await this.authApiService.login({ username: newUser.node?.user?.username, password: token?.sub });
+                await this.authApiService.register({ username: token?.name, email: token?.email, password: token?.sub });
+                const authenticatedUser = await this.authApiService.login({ username: token?.name, password: token?.sub });
                 if (!authenticatedUser) {
                     throw new GraphQLError("Error");
                 }

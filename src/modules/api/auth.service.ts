@@ -71,7 +71,6 @@ export class AuthApiService {
                 }),
             ),
         );
-
         return data;
     }
 
