@@ -46,8 +46,10 @@ export class AuthenticateService {
             const res = await this.authApiService.register(registerAuthenticateInput);
             if (!res) {
             }
+            console.log(res)
             return res;
         } catch (error) {
+            console.log(error)
             throw error;
         }
     }

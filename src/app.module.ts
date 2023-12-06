@@ -19,6 +19,8 @@ import { FileModule } from "./modules/file/file.module";
 import { AppController } from "./app.controller";
 import { ContactModule } from "./modules/contact/contact.module";
 import { ApiModule } from "./modules/api/api.module";
+import { AirMonitorModule } from './modules/air-monitor/air-monitor.module';
+import { DeviceModule } from './modules/device/device.module';
 
 @Module({
     imports: [
@@ -64,6 +66,8 @@ import { ApiModule } from "./modules/api/api.module";
         FileModule,
         ContactModule,
         ApiModule,
+        AirMonitorModule,
+        DeviceModule,
     ],
     controllers: [AppController],
     providers: [],
