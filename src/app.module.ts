@@ -10,16 +10,11 @@ import { HttpModule } from "@nestjs/axios";
 
 import { UserModule } from "./modules/user/user.module";
 import { AuthenticateModule } from "./modules/authenticate/authenticate.module";
-import { BlogModule } from "./modules/blog/blog.module";
-import { ProductModule } from "./modules/product/product.module";
 import { appConfig, mailConfig } from "./config";
 import { MailModule } from "./modules/mail/mail.module";
-import { OrderModule } from "./modules/order/order.module";
 import { FileModule } from "./modules/file/file.module";
 import { AppController } from "./app.controller";
 import { ContactModule } from "./modules/contact/contact.module";
-import { ApiModule } from "./modules/api/api.module";
-import { AirMonitorModule } from './modules/air-monitor/air-monitor.module';
 import { DeviceModule } from './modules/device/device.module';
 
 @Module({
@@ -59,14 +54,9 @@ import { DeviceModule } from './modules/device/device.module';
         PassportModule.register({ session: true }),
         UserModule,
         AuthenticateModule,
-        BlogModule,
-        ProductModule,
         MailModule,
-        OrderModule,
         FileModule,
         ContactModule,
-        ApiModule,
-        AirMonitorModule,
         DeviceModule,
     ],
     controllers: [AppController],

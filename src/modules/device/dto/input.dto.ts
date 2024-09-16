@@ -3,18 +3,18 @@ import { IsNumber, IsString } from "class-validator";
 
 
 @InputType()
-export class CreateItemInput {
+export class CreateDeviceInput {
     @Field(() => String, { nullable: false })
     @IsString()
-    serial_num: string;
+    device_name: string;
 
     @Field(() => Number, { nullable: false })
     @IsNumber()
-    id_product: number;
+    current_state: number;
 
     @Field(() => Number, { nullable: true })
     @IsNumber()
-    id_customer: number;
+    user_id: number;
 
     @Field(() => Number, { nullable: true })
     @IsNumber()
@@ -22,4 +22,4 @@ export class CreateItemInput {
 }
 
 @InputType()
-export class UpdateItemInput extends CreateItemInput {}
+export class UpdateItemInput extends CreateDeviceInput {}

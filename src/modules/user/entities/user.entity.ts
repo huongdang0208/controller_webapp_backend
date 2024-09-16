@@ -15,15 +15,6 @@ export class User {
     @IsEmail()
     email: string;
 
-    // @Field(() => String, { nullable: true })
-    // @IsString()
-    // password: string;
-
-    // @Field(() => Number, { nullable: true })
-    // order_id: number;
-
-    @Field({ nullable: false })
-    role: Role;
 
     @Field({ nullable: true })
     created_date: string;
@@ -44,16 +35,6 @@ export class UserResponse {
     @Field(() => String, { nullable: false })
     @IsEmail()
     email: string;
-
-    @Field(() => String, { nullable: true })
-    @IsString()
-    password: string;
-
-    // @Field(() => Number, { nullable: true })
-    // order_id: number;
-
-    @Field({ nullable: false })
-    role: Role;
 
     @Field({ nullable: true })
     created_date: string;

@@ -1,5 +1,6 @@
 import { Resolver, Mutation, Args, Context } from "@nestjs/graphql";
-import { UseGuards } from "@nestjs/common";
+import { Get, Req, UseGuards } from "@nestjs/common";
+import { AuthGuard } from '@nestjs/passport';
 import { AuthenticateService } from "./authenticate.service";
 import { LoginInput, LoginResponseBlock } from "./dto/login.dto";
 import { LogoutInput, LogoutResponseBlock } from "./dto/logout.dto";
@@ -28,7 +29,7 @@ export class AuthenticateResolver {
             },
         };
     }
-
+    // This mutation is protected by GqlLocalAuthGuard to ensure that only authenticated users can access it with username and password
     @Mutation(() => LoginResponseBlock)
     @UseGuards(GqlLocalAuthGuard)
     async login(
@@ -41,15 +42,24 @@ export class AuthenticateResolver {
         };
     }
 
-    @Mutation(() => LoginResponseBlock)
-    async google(
-        @Args("accessToken")
-        accessToken: string,
-    ) {
-        return {
-            message: "logged in successfully",
-            node: await this.authenticateService.googleLogin(accessToken),
-        };
+    // @Mutation(() => LoginResponseBlock)
+    // async google(
+    //     @Args("accessToken")
+    //     accessToken: string,
+    // ) {
+    //     return {
+    //         message: "logged in successfully",
+    //         node: await this.authenticateService.googleLogin(accessToken),
+    //     };
+    // }
+    @Get("google")
+    @UseGuards(AuthGuard("google"))
+    async googleAuth(@Req() req) {}
+
+    @Get("google/callback")
+    @UseGuards(AuthGuard("google"))
+    googleAuthRedirect(@Req() req) {
+        return req.user;
     }
 
     @Mutation(() => LoginResponseBlock, { name: "refresh_token" })
@@ -67,6 +77,7 @@ export class AuthenticateResolver {
         };
     }
 
+    // This mutation is protected by JwtAuthGuard to ensure that only request with valid JWT token can access it
     @Mutation(() => LogoutResponseBlock)
     @UseGuards(JwtAuthGuard)
     async logout(@Args("params") params: LogoutInput, @Context("req") req: any) {

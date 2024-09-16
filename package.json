@@ -32,6 +32,7 @@
         "@nestjs/passport": "^10.0.2",
         "@nestjs/platform-express": "^10.2.5",
         "@nestjs/serve-static": "^4.0.0",
+        "@prisma/client": "5.19.1",
         "@types/graphql-upload": "^16.0.2",
         "@types/nodemailer": "^6.4.11",
         "@types/passport-google-oauth20": "^2.0.13",
@@ -61,7 +62,7 @@
         "passport-google-oauth20": "^2.0.0",
         "passport-jwt": "^4.0.1",
         "passport-local": "^1.0.0",
-        "prisma": "^5.2.0",
+        "prisma": "^5.19.1",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.1",
         "uuid": "^9.0.1"

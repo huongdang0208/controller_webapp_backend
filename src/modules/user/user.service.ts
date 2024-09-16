@@ -1,16 +1,20 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { AuthApiService } from "../api/auth.service";
 import { GraphQLError } from "graphql";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class UserService {
     constructor(
-        private readonly authApiService: AuthApiService,
+        private readonly prisma: PrismaService
     ) { }
 
     async findOne(id: number) {
         try {
-            const user = this.authApiService.findUserById(Number(id));
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id
+                }
+            });
             if (!user) {
                 throw new NotFoundException("User not found");
             }
@@ -22,11 +26,15 @@ export class UserService {
 
     async getByEmail(email: string) {
         try {
-            const res = await this.authApiService.findUserByEmail(email);
-            if (!res) {
-                throw new GraphQLError("Not found");
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    email
+                }
+            });
+            if (!user) {
+                throw new NotFoundException("User not found");
             }
-            return res;
+            return user;
         } catch (error) {
             throw error;
         }
