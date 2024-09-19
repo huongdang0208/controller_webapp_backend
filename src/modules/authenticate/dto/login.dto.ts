@@ -1,5 +1,5 @@
 import { InputType, Field, ObjectType } from "@nestjs/graphql";
-import { IsString } from "class-validator";
+import { IsEmail, IsString } from "class-validator";
 import { User } from "../../user/entities/user.entity";
 import { BaseOneAbstractResult } from "../../base/dto/base-one.abstract-result";
 

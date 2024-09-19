@@ -10,12 +10,23 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { UserModule } from "../user/user.module";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { GoogleStrategy } from "./strategies/google.strategy";
+import { JwtModule } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
     imports: [
         PassportModule,
         UserModule,
         HttpModule,
+        ConfigModule,
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                secret: configService.get<string>("JWT_SECRET"),
+                signOptions: { expiresIn: "60m" },
+            }),
+            inject: [ConfigService],
+        }),
     ],
     providers: [AuthenticateResolver, AuthenticateService, LocalSerializer, LocalStrategy, JwtStrategy, Auth.OAuth2Client, GoogleStrategy],
 })

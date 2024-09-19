@@ -8,7 +8,9 @@ import { AppModule } from "./app.module";
 process.env.TZ = "Asia/Ho_Chi_Minh";
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        logger: ['log', 'error', 'warn', 'debug', 'verbose'], // Ensure 'log' is included
+      });
 
     app.useGlobalPipes(
         new ValidationPipe({
@@ -20,7 +22,7 @@ async function bootstrap() {
 
     app.use(
         session({
-            name: "DAVINCI_SESSION_ID",
+            name: "HARMONY_SESSION",
             secret: configService.get("session.secret"),
             resave: false,
             // when user is login, session is created, and if not, we don't

@@ -11,11 +11,11 @@ import { HttpModule } from "@nestjs/axios";
 import { UserModule } from "./modules/user/user.module";
 import { AuthenticateModule } from "./modules/authenticate/authenticate.module";
 import { appConfig, mailConfig } from "./config";
-import { MailModule } from "./modules/mail/mail.module";
 import { FileModule } from "./modules/file/file.module";
 import { AppController } from "./app.controller";
-import { ContactModule } from "./modules/contact/contact.module";
 import { DeviceModule } from './modules/device/device.module';
+import { Prisma } from "@prisma/client";
+import { PrismaModule } from "./modules/prisma/prisma.module";
 
 @Module({
     imports: [
@@ -54,10 +54,9 @@ import { DeviceModule } from './modules/device/device.module';
         PassportModule.register({ session: true }),
         UserModule,
         AuthenticateModule,
-        MailModule,
         FileModule,
-        ContactModule,
         DeviceModule,
+        PrismaModule,
     ],
     controllers: [AppController],
     providers: [],

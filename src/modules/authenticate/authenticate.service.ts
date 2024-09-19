@@ -1,9 +1,10 @@
 // import { session } from 'express-session';
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { GraphQLError } from "graphql";
 import { google, Auth } from "googleapis";
 import { JwtService } from "@nestjs/jwt";
+import { Logger } from '@nestjs/common';
 
 import { LoginInput } from "./dto/login.dto";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
@@ -27,23 +28,25 @@ export class AuthenticateService {
         this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
     }
 
-    async validateUser(email: string, password: string) {
+    async validateUser(username: string, pwd: string) {
         try {
+            console.log("🚀 ~ file: authenticate.service.ts ~ line 57 ~ AuthenticateService ~ validateUser ~ email", username);
             const user = await this.prisma.user.findUniqueOrThrow({
-                where: { email: email },
+                where: { username: username },
             });
+            console.log("🚀 ~ file: authenticate.service.ts ~ line 59 ~ AuthenticateService ~ validateUser ~ user", user);
 
             if (!user) {
                 throw new GraphQLError("User not found");
             }
 
-            const valid = await bcrypt.compare(password, user.password);
+            const valid = await bcrypt.compare(pwd, user.password);
 
             if (!valid) {
                 throw new GraphQLError("Invalid password");
             }
 
-            return user
+            return user;
         } catch (error) {
             throw error;
         }
@@ -53,7 +56,7 @@ export class AuthenticateService {
         try {
             const user = await this.prisma.user.findFirst({
                 where: { email: registerAuthenticateInput.email },
-            })
+            });
 
             if (user) {
                 throw new GraphQLError("User already exists");
@@ -76,30 +79,76 @@ export class AuthenticateService {
             }
             return newUser;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             throw error;
         }
+    }
+
+    private async signTokens(userId: number, email: string) {
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync(
+                {
+                    sub: userId,
+                    email,
+                },
+                {
+                    secret: this.configService.get("JWT_SECRET"),
+                    expiresIn: "1h",
+                },
+            ),
+            this.jwtService.signAsync(
+                {
+                    sub: userId,
+                },
+                {
+                    secret: this.configService.get("JWT_SECRET"),
+                    expiresIn: "7d",
+                },
+            ),
+        ]);
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 
     async login(loginAuthenticateInput: LoginInput) {
         try {
             const user = await this.prisma.user.findFirst({
-                where: { username: loginAuthenticateInput.username },
+                where: {
+                    username: loginAuthenticateInput.username,
+                },
             });
 
             if (!user) {
-                throw new GraphQLError("User not found");
+                throw new HttpException("Not found", HttpStatus.NOT_FOUND);
             }
 
-            const valid = await bcrypt.compare(loginAuthenticateInput.password, user.password);
+            const result = await bcrypt.compare(loginAuthenticateInput.password, user.password);
 
-            if (!valid) {
-                throw new GraphQLError("Invalid password");
+            if (!result) {
+                throw new Error("Thông tin đăng nhập không hợp lệ");
             }
 
-            return user;
+            const { accessToken, refreshToken } = await this.signTokens(user.id, user.email);
+
+            // Save to session
+            await this.prisma.session.create({
+                data: {
+                    userID: user.id,
+                    accessToken,
+                    refreshToken,
+                },
+            });
+
+            return {
+                accessToken,
+                refreshToken,
+                user: user,
+            };
         } catch (error) {
-            throw error;
+            throw new HttpException(error, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -144,25 +193,25 @@ export class AuthenticateService {
     async googleLogin(accessToken: string) {
         const token: any = jwtDecode(accessToken);
         try {
-          const user = await this.prisma.user.findFirst({ where: { email: token?.email } });
-          if (!user) {
-            await this.prisma.user.create({
-              data: {
-                username: token?.name,
-                email: token?.email,
-                password: token?.sub, // You might want to hash this or handle it differently
-              },
-            });
-          }
-          const authenticatedUser = await this.prisma.user.findFirst({ where: { email: token?.email } });
-          if (!authenticatedUser) {
-            throw new GraphQLError('Error');
-          }
-          return authenticatedUser;
+            const user = await this.prisma.user.findFirst({ where: { email: token?.email } });
+            if (!user) {
+                await this.prisma.user.create({
+                    data: {
+                        username: token?.name,
+                        email: token?.email,
+                        password: token?.sub, // You might want to hash this or handle it differently
+                    },
+                });
+            }
+            const authenticatedUser = await this.prisma.user.findFirst({ where: { email: token?.email } });
+            if (!authenticatedUser) {
+                throw new GraphQLError("Error");
+            }
+            return authenticatedUser;
         } catch (err) {
-          throw new GraphQLError(err);
+            throw new GraphQLError(err);
         }
-      }
+    }
 
     async refreshToken(params: RefreshTokenInput, accessToken: string) {
         try {

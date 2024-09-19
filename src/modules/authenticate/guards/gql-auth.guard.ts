@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
+import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -21,4 +21,11 @@ export class GqlLocalAuthGuard extends AuthGuard("local") {
 
         return context.switchToHttp().getRequest();
     }
+    handleRequest(err, user, info, context) {
+        if (err || !user) {
+            console.log("🚀 ~ file: gql-auth.guard.ts ~ line 47 ~ GqlLocalAuthGuard ~ handleRequest ~ err", err);
+            throw err || new UnauthorizedException();
+        }
+        return user;
+      }
 }

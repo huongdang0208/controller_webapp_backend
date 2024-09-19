@@ -4,7 +4,7 @@ import { Roles } from "../../decorators/roles/roles.decorator";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { Role } from "../../utils/types/role.enum";
 import { DeviceService } from "./device.service";
-import { CreateItemInput, UpdateItemInput } from "./dto/input.dto";
+import { CreateDeviceInput, UpdateItemInput } from "./dto/input.dto";
 import { DeviceQueryInput } from "./dto/query.dto";
 import { DevicesResponse } from "./dto/response.dto";
 import { DeviceResponse } from "./entities/device.entity";
@@ -22,7 +22,7 @@ export class DeviceResolver {
     @Mutation(() => DeviceResponse)
     @UseGuards(JwtAuthGuard)
     @Roles(Role.Admin)
-    async create_device (@Args("input") input: CreateItemInput) {
+    async create_device (@Args("input") input: CreateDeviceInput) {
         return this.deviceService.create(input);
     }
 

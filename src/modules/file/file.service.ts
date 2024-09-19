@@ -22,15 +22,6 @@ export class FileService {
         const cdnPath = `cdn/${newPath}`;
 
         try {
-            // return this.prisma.file.create({
-            //     data: {
-            //         filename: filename,
-            //         mimetype: mimetype,
-            //         size: size,
-            //         path: newPath,
-            //         cdn_path: cdnPath,
-            //     },
-            // });
 
             const res = await firstValueFrom(
                 this.httpService

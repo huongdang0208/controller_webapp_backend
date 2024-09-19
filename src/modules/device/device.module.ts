@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { ApiModule } from "../api/api.module";
 import { DeviceResolver } from "./device.resolver";
 import { DeviceService } from "./device.service";
+// import { PrismaService } from "../prisma/prisma.service";
 
 @Module({
     providers: [DeviceResolver, DeviceService],
-    imports: [ApiModule],
+    imports: [],
 })
 export class DeviceModule {}
