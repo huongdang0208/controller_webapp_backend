@@ -2,8 +2,6 @@ import { Controller, Post, UploadedFile, UploadedFiles, UseGuards, UseIntercepto
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { FileService } from "./file.service";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
-import { Roles } from "../../decorators/roles/roles.decorator";
-import { Role } from "../../utils/types/role.enum";
 
 @Controller("file")
 export class FileController {
@@ -12,7 +10,6 @@ export class FileController {
     @Post("upload")
     @UseInterceptors(FileInterceptor("file"))
     @UseGuards(JwtAuthGuard)
-    @Roles(Role.Admin)
     uploadFile(@UploadedFile() file: Express.Multer.File) {
         return this.fileService.saveFile(file);
     }
@@ -20,7 +17,6 @@ export class FileController {
     @Post("uploadMany")
     @UseInterceptors(FilesInterceptor("files"))
     @UseGuards(JwtAuthGuard)
-    @Roles(Role.Admin)
     uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
         return this.fileService.saveFiles(files);
     }

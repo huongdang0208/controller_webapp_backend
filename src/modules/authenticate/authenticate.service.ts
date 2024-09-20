@@ -219,12 +219,42 @@ export class AuthenticateService {
                 secret: this.configService.get("JWT_SECRET"),
                 ignoreExpiration: true,
             });
+            console.log("🚀 ~ file: authenticate.service.ts ~ line 228 ~ AuthenticateService ~ refreshToken ~ userID", userID);
             const session = await this.prisma.session.findFirst({
                 where: {
                     userID: userID,
                     accessToken: accessToken,
                 },
             });
+
+            if (!session) {
+                throw new HttpException("Session invalid", HttpStatus.BAD_REQUEST);
+            }
+
+            const foundUser = await this.prisma.user.findUnique({
+                where: {
+                    id: session.userID,
+                },
+            });
+
+            const { accessToken: newAccessToken } = await this.signTokens(session.userID, foundUser.email);
+
+            // Update session
+            await this.prisma.session.update({
+                where: {
+                    id: session.id,
+                },
+                data: {
+                    accessToken: newAccessToken,
+                },
+            });
+
+            return {
+                accessToken: newAccessToken,
+                refreshToken: session.refreshToken,
+                user: foundUser,
+            };
+            
         } catch (err) {
             throw new GraphQLError(err);
         }
@@ -246,7 +276,8 @@ export class AuthenticateService {
     }
 
     async getSessionByAccessToken(token: string, userId: number) {
-        return this.prisma.session.findFirst({
+        console.log("🚀 ~ file: authenticate.service.ts ~ line 271 ~ AuthenticateService ~ getSessionByAccessToken ~ token", token);
+        const session = await this.prisma.session.findFirst({
             where: {
                 accessToken: token,
                 userID: userId,
@@ -255,5 +286,7 @@ export class AuthenticateService {
                 user: true,
             },
         });
+        console.log("🚀 ~ file: authenticate.service.ts ~ line 276 ~ AuthenticateService ~ getSessionByAccessToken ~ session", session);
+        return session
     }
 }

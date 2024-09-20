@@ -4,21 +4,22 @@ import { IsDate, IsNumber, IsString } from "class-validator";
 export class DeviceResponse {
     @Field(() => String, { nullable: false })
     @IsString()
-    serial_num: string;
+    device_name: string;
 
     @Field(() => Number, { nullable: false })
     @IsNumber()
-    id_product: number;
+    id: number;
+
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    userID: number;
 
     @Field(() => Number, { nullable: true })
     @IsNumber()
-    id_customer: number;
-
-    @Field(() => Number, { nullable: true })
-    @IsNumber()
-    id_address: number;
+    current_state: number;
 
     @Field(() => String, { nullable: true })
-    connected_date: string;
+    @IsDate()
+    created_at: Date;
 }
 

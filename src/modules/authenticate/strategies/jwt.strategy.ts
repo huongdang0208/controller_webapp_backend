@@ -23,6 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     async validate(req: express.Request, payload: any) {
         const accessToken = req.headers.authorization.split(" ")[1];
         const { sub } = payload;
+        console.log("sub", sub);
 
         const session = await this.authService.getSessionByAccessToken(accessToken, sub);
 
