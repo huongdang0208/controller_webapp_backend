@@ -39,4 +39,20 @@ export class UserService {
             throw error;
         }
     }
+
+    async findUserByLicense(license: string) {
+        try {
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    hub_license_key: license
+                }
+            });
+            if (!user) {
+                throw new NotFoundException("User not found");
+            }
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

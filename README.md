@@ -74,3 +74,6 @@ Nest is [MIT licensed](LICENSE).
 
 ## Prisma Initialize
 - This project source use prisma as ORM, so to start prisma use this command: `yarn prisma init`
+
+## Run docker with .env file
+-`docker run -d --name nestjs-backend --env-file .env -p 8080:8080 gateway-server`

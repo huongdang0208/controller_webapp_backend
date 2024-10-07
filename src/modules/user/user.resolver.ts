@@ -1,4 +1,4 @@
-import { Resolver, Query } from "@nestjs/graphql";
+import { Resolver, Query, Args } from "@nestjs/graphql";
 import { UseGuards } from "@nestjs/common";
 
 import { UserService } from "./user.service";
@@ -14,6 +14,12 @@ export class UserResolver {
     @UseGuards(JwtAuthGuard)
     me(@UserGraphql() session: {session: {userId: number}}) {
         const user = this.userService.findOne(Number(session.session.userId));
+        return user;
+    }
+
+    @Query(() => User)
+    userByLicense(@Args("license") license: string) {
+        const user = this.userService.findUserByLicense(license);
         return user;
     }
 }

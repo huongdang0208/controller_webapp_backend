@@ -19,6 +19,7 @@ model user {
   username String? @unique @db.VarChar(100)
   password String? @db.VarChar(100)
 
+  hub_license_key   String?   @db.VarChar(100)
   token_cache_login String?   @db.VarChar(100)
   session           session[]
   device            device[]

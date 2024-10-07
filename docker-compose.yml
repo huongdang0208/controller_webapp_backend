@@ -1,26 +1,21 @@
-version: "23.0.5"
-services: 
-  dev-db: 
-    image: postgres:13
+version: "3.8"
+services:
+  backend:
+    container_name: graphql-server
+    mem_limit: 2g
+    restart: always
+    build:
+      dockerfile: Dockerfile
     ports:
-    # map the contianer port: 5432 to localhost port 5430
-      - 5430:5432
+      - "8080:8080"
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: dtth2802
-      POSTGRES_DB: nest
-    networks:
-      - postgres-network
-  test-db: 
-    image: postgres:13
-    ports:
-    # map the contianer port: 5432 to localhost port 5430
-      - 5433:5435
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: dtth2802
-      POSTGRES_DB: nest
-    networks:
-      - postgres-network
+      - DB_HOST=localhost
+      - DB_PORT=3306
+      - DB_USER=thuhuong
+      - DB_PASSWORD=thuhuong0208
+      - DB_NAME=gatewaydb   
+
 networks:
-  postgres-network:
+  mysql-network:
+    driver: bridge
+
