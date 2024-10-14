@@ -15,6 +15,10 @@ export class User {
     @IsEmail()
     email: string;
 
+    @Field(() => String, { nullable: true })
+    @IsString()
+    hub_license_key: string
+
 
     @Field({ nullable: true })
     created_date: string;

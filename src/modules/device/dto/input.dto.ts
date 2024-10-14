@@ -14,12 +14,18 @@ export class CreateDeviceInput {
 
     @Field(() => Number, { nullable: true })
     @IsNumber()
-    user_id: number;
+    userID: number;
 
-    @Field(() => Number, { nullable: true })
-    @IsNumber()
-    id_address: number;
+    // @Field(() => Number, { nullable: true })
+    // @IsNumber()
+    // id_address: number;
 }
 
 @InputType()
 export class UpdateItemInput extends CreateDeviceInput {}
+
+@InputType()
+export class CreateDevicesInput {
+    @Field(() => [CreateDeviceInput])
+    devices: CreateDeviceInput[];
+}

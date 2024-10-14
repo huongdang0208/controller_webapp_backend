@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { GraphQLError } from "graphql";
 import { google, Auth } from "googleapis";
 import { JwtService } from "@nestjs/jwt";
-import { Logger } from '@nestjs/common';
+import { Logger } from "@nestjs/common";
 
 import { LoginInput } from "./dto/login.dto";
 import { RegisterAuthenticateInput } from "./dto/register.dto";
@@ -55,7 +55,9 @@ export class AuthenticateService {
     async register(registerAuthenticateInput: RegisterAuthenticateInput) {
         try {
             const user = await this.prisma.user.findFirst({
-                where: { email: registerAuthenticateInput.email },
+                where: {
+                    OR: [{ username: registerAuthenticateInput.username }, { email: registerAuthenticateInput.email }],
+                },
             });
 
             if (user) {
@@ -254,7 +256,6 @@ export class AuthenticateService {
                 refreshToken: session.refreshToken,
                 user: foundUser,
             };
-            
         } catch (err) {
             throw new GraphQLError(err);
         }
@@ -287,6 +288,6 @@ export class AuthenticateService {
             },
         });
         console.log("🚀 ~ file: authenticate.service.ts ~ line 276 ~ AuthenticateService ~ getSessionByAccessToken ~ session", session);
-        return session
+        return session;
     }
 }

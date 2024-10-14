@@ -4,9 +4,9 @@ import { DeviceResponse } from "../entities/device.entity";
 
 @ObjectType()
 export class DevicesResponse {
-    @Field(() => [DeviceResponse])
+    @Field(() => [DeviceResponse], { nullable: true })
     items: DeviceResponse[];
 
-    @Field(() => PaginateInfo, { nullable: true })
-    paginateInfo: PaginateInfo;
+    // @Field(() => PaginateInfo, { nullable: true })
+    // paginateInfo: PaginateInfo;
 }

@@ -1,21 +1,32 @@
 version: "3.8"
-services:
-  backend:
-    container_name: graphql-server
-    mem_limit: 2g
-    restart: always
-    build:
-      dockerfile: Dockerfile
+services: 
+  dev-db: 
+    image: mysql:latest
     ports:
-      - "8080:8080"
+      - 3306:3306
     environment:
-      - DB_HOST=localhost
-      - DB_PORT=3306
-      - DB_USER=thuhuong
-      - DB_PASSWORD=thuhuong0208
-      - DB_NAME=gatewaydb   
+      MYSQL_ROOT_PASSWORD: dtth2802
+      MYSQL_USER: root
+      MYSQL_PASSWORD: dtth2802
+      MYSQL_DATABASE: gatewaydb
+    networks:
+      - mysql-network
+
+  nest-app:
+    build:
+      context: .
+      dockerfile: Dockerfile # Points to your Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - dev-db
+    environment:
+      DATABASE_URL: mysql://root:dtth2802@dev-db:3306/gatewaydb
+      NODE_ENV: .env
+    networks:
+      - mysql-network
+    #command: ["node", "dist/main"] # Starts your NestJS app
 
 networks:
   mysql-network:
     driver: bridge
-
