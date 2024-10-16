@@ -16,6 +16,10 @@ export class RegisterAuthenticateInput {
     @Field(() => String, { nullable: false })
     @IsString()
     password: string;
+
+    @Field(() => String, { nullable: false })
+    @IsString()
+    hub_license_key: string;
 }
 
 @ObjectType()

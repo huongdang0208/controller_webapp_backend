@@ -36,6 +36,7 @@ export class DeviceService {
                         device_name: device.device_name,
                         current_state: device.current_state,
                         userID: device.userID,
+                        protocol: device.protocol,
                     })),
                 });
                 const listDevices = await this.prisma.device.findMany({
@@ -51,14 +52,12 @@ export class DeviceService {
         }
     }
 
-    async update(input: UpdateItemInput, deviceID: number) {
+    async update(input: UpdateItemInput) {
         try {
             const data = await this.prisma.device.update({
-                where: { id: deviceID },
+                where: { id: input.id },
                 data: {
-                    device_name: input.device_name,
                     current_state: input.current_state,
-                    userID: input.userID,
                 },
             });
             return data;

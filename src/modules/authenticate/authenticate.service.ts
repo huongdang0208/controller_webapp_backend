@@ -74,6 +74,7 @@ export class AuthenticateService {
                     username: registerAuthenticateInput.username,
                     email: registerAuthenticateInput.email,
                     password: hashedPassword,
+                    hub_license_key: registerAuthenticateInput.hub_license_key,
                 },
             });
             if (!newUser) {

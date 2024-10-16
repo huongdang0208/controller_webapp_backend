@@ -20,6 +20,10 @@ export class DeviceResponse {
     device_name: string;
 
     @Field(() => String, { nullable: true })
+    @IsString()
+    protocol: string;
+
+    @Field(() => String, { nullable: true })
     @IsDate()
     created_at: Date;
 

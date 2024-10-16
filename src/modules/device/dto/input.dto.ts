@@ -12,17 +12,25 @@ export class CreateDeviceInput {
     @IsNumber()
     current_state: number;
 
-    @Field(() => Number, { nullable: true })
+    @Field(() => Number, { nullable: false })
     @IsNumber()
     userID: number;
 
-    // @Field(() => Number, { nullable: true })
-    // @IsNumber()
-    // id_address: number;
+    @Field(() => String, { nullable: true })
+    @IsNumber()
+    protocol: string;
 }
 
 @InputType()
-export class UpdateItemInput extends CreateDeviceInput {}
+export class UpdateItemInput {
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    id: number;
+
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    current_state: number;
+}
 
 @InputType()
 export class CreateDevicesInput {

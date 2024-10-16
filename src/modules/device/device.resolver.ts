@@ -33,7 +33,7 @@ export class DeviceResolver {
 
     @Mutation(() => DeviceResponse)
     @UseGuards(JwtAuthGuard)
-    async update_device(@Args("id") id: number, @Args("input") input: UpdateItemInput) {
-        return this.deviceService.update(input, id);
+    async update_device(@Args("input") input: UpdateItemInput) {
+        return this.deviceService.update(input);
     }
 }
