@@ -1,6 +1,6 @@
 version: "3.8"
-services: 
-  dev-db: 
+services:
+  dev-db:
     image: mysql:latest
     ports:
       - 3306:3306
@@ -11,21 +11,24 @@ services:
       MYSQL_DATABASE: gatewaydb
     networks:
       - mysql-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  nest-app:
-    build:
-      context: .
-      dockerfile: Dockerfile # Points to your Dockerfile
+  gateway-server:
+    image: controller_webapp_backend-nest-app
+    container_name: gateway-server
+    env_file:
+      - ./production.env
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
-      - dev-db
-    environment:
-      DATABASE_URL: mysql://root:dtth2802@dev-db:3306/gatewaydb
-      NODE_ENV: .env
+      dev-db:
+        condition: service_healthy
     networks:
       - mysql-network
-    #command: ["node", "dist/main"] # Starts your NestJS app
 
 networks:
   mysql-network:
