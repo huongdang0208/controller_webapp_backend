@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { GraphQLError } from 'graphql';
+import { GraphQLError } from "graphql";
 import { CreateDeviceInput, UpdateItemInput, CreateDevicesInput } from "./dto/input.dto";
 import { DeviceQueryInput } from "./dto/query.dto";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class DeviceService {
-    constructor(private prisma: PrismaService ) {}
+    constructor(private prisma: PrismaService) {}
 
     async create(input: CreateDeviceInput) {
         try {
@@ -15,6 +15,8 @@ export class DeviceService {
                     device_name: input.device_name,
                     current_state: input.current_state,
                     userID: input.userID,
+                    protocol: input.protocol,
+                    pin: input.pin,
                 },
             });
             return data;
@@ -37,6 +39,7 @@ export class DeviceService {
                         current_state: device.current_state,
                         userID: device.userID,
                         protocol: device.protocol,
+                        pin: device.pin,
                     })),
                 });
                 const listDevices = await this.prisma.device.findMany({
@@ -71,6 +74,21 @@ export class DeviceService {
             const data = await this.prisma.device.findMany({
                 where: {
                     userID: filter.userID,
+                },
+            });
+            return data;
+        } catch (err) {
+            throw new GraphQLError(err);
+        }
+    }
+
+    async findDevicesByLicense(license: string) {
+        try {
+            const data = await this.prisma.device.findMany({
+                where: {
+                    user: {
+                        hub_license_key: license,
+                    },
                 },
             });
             return data;

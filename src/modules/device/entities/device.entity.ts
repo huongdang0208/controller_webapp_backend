@@ -23,6 +23,10 @@ export class DeviceResponse {
     @IsString()
     protocol: string;
 
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    pin: number;
+
     @Field(() => String, { nullable: true })
     @IsDate()
     created_at: Date;

@@ -76,4 +76,9 @@ Nest is [MIT licensed](LICENSE).
 - This project source use prisma as ORM, so to start prisma use this command: `yarn prisma init`
 
 ## Run docker with .env file
+-`docker build -t gateway-server .`
 -`docker run -d --name nestjs-backend --env-file .env -p 8080:8080 gateway-server`
+## Way to build container with docker
+- open gateway-db and up this db container 
+- create network to communication between container: docker create network mysql-network
+- modify db url in prisma

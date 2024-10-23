@@ -36,4 +36,10 @@ export class DeviceResolver {
     async update_device(@Args("input") input: UpdateItemInput) {
         return this.deviceService.update(input);
     }
+
+    @Query(() => DevicesResponse)
+    async devices_by_license(@Args("license") license: string) {
+        const data = await this.deviceService.findDevicesByLicense(license);
+        return { items: data };
+    }
 }

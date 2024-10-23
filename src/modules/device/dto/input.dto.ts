@@ -17,8 +17,12 @@ export class CreateDeviceInput {
     userID: number;
 
     @Field(() => String, { nullable: true })
-    @IsNumber()
+    @IsString()
     protocol: string;
+
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    pin: number;
 }
 
 @InputType()
