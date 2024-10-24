@@ -23,7 +23,7 @@ export class DeviceResponse {
     @IsString()
     protocol: string;
 
-    @Field(() => Number, { nullable: false })
+    @Field(() => Number, { nullable: true })
     @IsNumber()
     pin: number;
 

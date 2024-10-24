@@ -20,7 +20,7 @@ export class CreateDeviceInput {
     @IsString()
     protocol: string;
 
-    @Field(() => Number, { nullable: false })
+    @Field(() => Number, { nullable: true })
     @IsNumber()
     pin: number;
 }
@@ -34,6 +34,13 @@ export class UpdateItemInput {
     @Field(() => Number, { nullable: false })
     @IsNumber()
     current_state: number;
+}
+
+@InputType()
+export class DeleteDeviceInput {
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    id: number;
 }
 
 @InputType()

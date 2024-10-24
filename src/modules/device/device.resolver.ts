@@ -2,7 +2,7 @@ import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { DeviceService } from "./device.service";
-import { CreateDeviceInput, UpdateItemInput, CreateDevicesInput } from "./dto/input.dto";
+import { CreateDeviceInput, UpdateItemInput, CreateDevicesInput, DeleteDeviceInput } from "./dto/input.dto";
 import { DeviceQueryInput } from "./dto/query.dto";
 import { DevicesResponse } from "./dto/response.dto";
 import { DeviceResponse } from "./entities/device.entity";
@@ -35,6 +35,12 @@ export class DeviceResolver {
     @UseGuards(JwtAuthGuard)
     async update_device(@Args("input") input: UpdateItemInput) {
         return this.deviceService.update(input);
+    }
+
+    @Mutation(() => String)
+    @UseGuards(JwtAuthGuard)
+    async delete_device(@Args("input") input: DeleteDeviceInput) {
+        return this.deviceService.delete(input);
     }
 
     @Query(() => DevicesResponse)
