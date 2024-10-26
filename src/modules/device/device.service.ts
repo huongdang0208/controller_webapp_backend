@@ -96,13 +96,23 @@ export class DeviceService {
 
     async update(input: UpdateItemInput) {
         try {
-            const data = await this.prisma.device.update({
+            console.log('update device', input);
+            const updated_device = await this.prisma.device.update({
                 where: { id: input.id },
                 data: {
                     current_state: input.current_state,
                 },
             });
-            return data;
+            await this.prisma.command.create({
+                data: {
+                    deviceID: input.id,
+                    command: input.current_state == 0 ? "OFF" : "ON",
+                    sender: "device",
+                    receiver: "server",
+                    userID: updated_device.userID,
+                },
+            });
+            return updated_device;
         } catch (err) {
             throw new GraphQLError(err);
         }

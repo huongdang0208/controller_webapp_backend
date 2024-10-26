@@ -1,12 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, InputType } from "@nestjs/graphql";
 import { IsDate, IsNumber, IsString } from "class-validator";
 
-@ObjectType()
-export class CommandResponse {
-    @Field(() => Number, { nullable: false })
-    @IsNumber()
-    id: number;
-
+@InputType()
+export class CreateCommandInput {
     @Field(() => Number, { nullable: false })
     @IsNumber()
     deviceID: number;
