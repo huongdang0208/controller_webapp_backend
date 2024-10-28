@@ -13,9 +13,9 @@ export class Time {
 }
 @ObjectType()
 export class CommandAnalyzeOutput {
-    @Field(() => [String], { nullable: false })
-    days: String[];
+    @Field(() => [Date], { nullable: true })
+    days: Date[];
 
-    @Field(() => [Time], { nullable: false })
+    @Field(() => [Time], { nullable: true })
     hoursPerDay: Time[];
 }

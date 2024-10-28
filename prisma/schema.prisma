@@ -24,6 +24,7 @@ model user {
   session           session[]
   device            device[]
   command           command[]
+  timer             timer[]
 
   created_date DateTime? @default(now()) @db.DateTime(0)
   modify_date  DateTime? @default(now()) @db.DateTime(0)
@@ -53,23 +54,42 @@ model device {
   updated_at    DateTime? @default(now()) @db.DateTime(0)
 
   command command[]
+  timer   timer[]
 
   @@index([userID], map: "userID")
 }
 
 model command {
-  id         Int       @id @default(autoincrement())
-  deviceID   Int?
-  userID     Int
-  command    String?   @db.VarChar(200)
-  sender     String?   @db.VarChar(200)
-  receiver   String?   @db.VarChar(200)
+  id       Int     @id @default(autoincrement())
+  deviceID Int?
+  userID   Int
+  command  String? @db.VarChar(200)
+  sender   String? @db.VarChar(200)
+  receiver String? @db.VarChar(200)
 
   created_at DateTime? @default(now()) @db.DateTime(0)
   updated_at DateTime? @default(now()) @db.DateTime(0)
 
-  device     device?   @relation(fields: [deviceID], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "command_ibfk_1")
-  user       user?     @relation(fields: [userID], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "command_ibfk_2")
+  device device? @relation(fields: [deviceID], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "command_ibfk_1")
+  user   user?   @relation(fields: [userID], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "command_ibfk_2")
+
+  @@index([deviceID], map: "deviceID")
+}
+
+model timer {
+  id       Int       @id @default(autoincrement())
+  deviceID Int?
+  userID   Int
+  action   String?   @db.VarChar(200)
+  time     DateTime? @db.DateTime(0)
+  date     DateTime? @db.DateTime(0)
+  status   String?   @db.VarChar(200)
+
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+
+  device device? @relation(fields: [deviceID], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "timer_ibfk_1")
+  user   user?   @relation(fields: [userID], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "timer_ibfk_2")
 
   @@index([deviceID], map: "deviceID")
 }

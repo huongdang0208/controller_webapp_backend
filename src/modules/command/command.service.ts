@@ -41,7 +41,10 @@ export class CommandService {
     }
 
     calculateActiveHours(commands: CommandResponse[], days: string[]) {
-        var activeHours: Time[] = [{ hours: 0, minutes: 0, seconds: 0 }];
+        var activeHours: Time[] = [];
+        days.forEach(() => {
+            activeHours.push({ hours: 0, minutes: 0, seconds: 0 });
+        });
         for (var i = 0; i < commands.length - 1; i++) {
             const dateOne = commands[i].created_at.toISOString().split("T")[0];
             const dateTwo = commands[i + 1].created_at.toISOString().split("T")[0];
@@ -62,7 +65,7 @@ export class CommandService {
                 });
             }
         }
-        console.log("Active hours:", activeHours);
+        console.log("Active hours 0:", activeHours);
         if (commands[commands.length - 1].command === "ON" && days[days.length - 1] === commands[commands.length - 1].created_at.toISOString().split("T")[0]) {
             const date = new Date(commands[commands.length - 1].created_at);
             const currentDate = new Date();
@@ -74,7 +77,7 @@ export class CommandService {
             activeHours[days.length - 1].minutes += minutes;
             activeHours[days.length - 1].seconds += seconds;
         }
-        console.log("Active hours:", activeHours);
+        console.log("Active hours 1:", activeHours);
         return activeHours;
     }
 
@@ -89,7 +92,8 @@ export class CommandService {
             if (list_commands.length === 0) {
                 return { commands: [] };
             }
-            const days: string[] = [];
+            const days: Date[] = [];
+            const daysInString: string[] = [];
             list_commands.forEach((command, index) => {
                 const date = new Date(command.created_at);
                 const month = date.getMonth() + 1;
@@ -98,13 +102,15 @@ export class CommandService {
                 const minutes = date.getMinutes();
                 console.log(`${index} - Date: ${month}/${dayx} Time: ${hours}:${minutes} - ${command.command}`);
                 const day = command.created_at.toISOString().split("T")[0];
-                if (!days.includes(day)) {
-                    days.push(day);
+                if (!daysInString.includes(day)) {
+                    days.push(command.created_at);
+                    daysInString.push(day);
                 }
             });
-            const activeHours = this.calculateActiveHours(list_commands, days);
-            console.log(days);
-            return { days: days, hoursPerDay: activeHours };
+            const activeHours = this.calculateActiveHours(list_commands, daysInString);
+            console.log('days in string', daysInString);
+            console.log('days ', days);
+            return { days: days || [], hoursPerDay: activeHours || []};
         } catch (error) {
             throw error;
         }

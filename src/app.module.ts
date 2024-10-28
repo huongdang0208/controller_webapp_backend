@@ -17,6 +17,7 @@ import { DeviceModule } from './modules/device/device.module';
 import { Prisma } from "@prisma/client";
 import { PrismaModule } from "./modules/prisma/prisma.module";
 import { CommandModule } from './modules/command/command.module';
+import { TimerModule } from './modules/timer/timer.module';
 
 @Module({
     imports: [
@@ -59,6 +60,7 @@ import { CommandModule } from './modules/command/command.module';
         DeviceModule,
         PrismaModule,
         CommandModule,
+        TimerModule,
     ],
     controllers: [AppController],
     providers: [],
