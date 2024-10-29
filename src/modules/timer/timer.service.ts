@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateTimerInput, UpdateTimerInput } from "./dto/timer.input";
+import { CreateTimerInput, UpdateTimerInput, UpdateTimerStatusInput } from "./dto/timer.input";
 
 @Injectable()
 export class TimerService {
@@ -36,6 +36,7 @@ export class TimerService {
                         action: input.action,
                         date: input?.date,
                         time: input?.time,
+                        status: input?.status,
                     },
                 });
                 if (newData) {
@@ -63,6 +64,7 @@ export class TimerService {
                         time: input?.time,
                         date: input?.date,
                         deviceID: input?.deviceID,
+                        status: input?.status,
                     },
                 });
                 if (updateData) {
@@ -72,6 +74,23 @@ export class TimerService {
             } else {
                 throw new GraphQLError("Device does not exist!");
             }
+        } catch (err) {
+            throw new GraphQLError(err);
+        }
+    }
+
+    async updateTimerStatus(input: UpdateTimerStatusInput) {
+        try {
+            const updateData = await this.prisma.timer.update({
+                where: { id: input.id },
+                data: {
+                    status: input?.status,
+                },
+            });
+            if (updateData) {
+                return updateData;
+            }
+            throw new GraphQLError("Cannot update timer!");
         } catch (err) {
             throw new GraphQLError(err);
         }

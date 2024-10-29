@@ -46,9 +46,20 @@ export class UpdateTimerInput {
     @IsDate()
     date: Date;
 
-    @Field(() => Date, { nullable: false })
+    @Field(() => Date, { nullable: true })
     @IsDate()
     time: Date;
+
+    @Field(() => String, { nullable: true })
+    @IsString()
+    status: string;
+}
+
+@InputType()
+export class UpdateTimerStatusInput {
+    @Field(() => Number, { nullable: false })
+    @IsNumber()
+    id: number;
 
     @Field(() => String, { nullable: true })
     @IsString()

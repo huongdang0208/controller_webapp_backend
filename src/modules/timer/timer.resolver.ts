@@ -3,7 +3,7 @@ import { TimerService } from "./timer.service";
 import { TimerResponse, TimersResponse } from "./entities/timer.entity";
 import { JwtAuthGuard } from "../../guards/auth/auth.guard";
 import { UseGuards } from "@nestjs/common";
-import { CreateTimerInput, UpdateTimerInput } from "./dto/timer.input";
+import { CreateTimerInput, UpdateTimerInput, UpdateTimerStatusInput } from "./dto/timer.input";
 
 @Resolver()
 export class TimerResolver {
@@ -26,6 +26,12 @@ export class TimerResolver {
     @UseGuards(JwtAuthGuard)
     async update_timer(@Args("input") input: UpdateTimerInput) {
         return this.timerService.updateTimer(input);
+    }
+
+    @Mutation(() => TimerResponse)
+    @UseGuards(JwtAuthGuard)
+    async update_timer_status(@Args("input") input: UpdateTimerStatusInput) {
+        return this.timerService.updateTimerStatus(input);
     }
 
     @Mutation(() => String)
